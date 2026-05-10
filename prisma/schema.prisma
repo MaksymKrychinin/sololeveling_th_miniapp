@@ -1,0 +1,265 @@
+// Prisma Schema for Solo Leveling Telegram Mini App
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER MODEL
+// ============================================================================
+
+model User {
+  id         String   @id @default(uuid())
+  telegramId BigInt   @unique @map("telegram_id")
+  username   String?
+  firstName  String?  @map("first_name")
+  lastName   String?  @map("last_name")
+  avatarUrl  String?  @map("avatar_url")
+
+  // Progression
+  level      Int      @default(1)
+  currentXP  Int      @default(0) @map("current_xp")
+  totalXP    Int      @default(0) @map("total_xp")
+  title      String   @default("E-Rank Hunter")
+
+  // Stats
+  strength     Int    @default(1)
+  agility      Int    @default(1)
+  intelligence Int    @default(1)
+  vitality     Int    @default(1)
+  sense        Int    @default(1)
+
+  // Activity
+  streak           Int       @default(0)
+  lastActiveDate   DateTime? @map("last_active_date") @db.Date
+  totalTasksCompleted Int    @default(0) @map("total_tasks_completed")
+
+  // Settings
+  timezone            String  @default("UTC")
+  notificationEnabled Boolean @default(true) @map("notification_enabled")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  quests            Quest[]
+  questCompletions  QuestCompletion[]
+  achievements      UserAchievement[]
+  statsHistory      StatsHistory[]
+  friendsInitiated  Friendship[]      @relation("FriendInitiator")
+  friendsReceived   Friendship[]      @relation("FriendReceiver")
+
+  @@index([telegramId])
+  @@index([level(sort: Desc)])
+  @@index([totalXP(sort: Desc)])
+  @@index([streak(sort: Desc)])
+  @@map("users")
+}
+
+// ============================================================================
+// QUEST MODELS
+// ============================================================================
+
+model Quest {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  title       String
+  description String?
+  category    String // QuestCategory enum as string
+
+  // Rewards
+  xpReward        Int    @map("xp_reward")
+  statBonusType   String? @map("stat_bonus_type")   // StatType enum
+  statBonusAmount Int?    @map("stat_bonus_amount")
+
+  // Configuration
+  difficulty String  @default("medium") // QuestDifficulty enum
+  icon       String
+  color      String?
+  frequency  String  @default("daily")  // QuestFrequency enum
+  isActive   Boolean @default(true)     @map("is_active")
+
+  // Status
+  status      String    @default("pending") // QuestStatus enum
+  completedAt DateTime? @map("completed_at")
+
+  // Progress
+  streak           Int @default(0)
+  totalCompletions Int @default(0) @map("total_completions")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  completions QuestCompletion[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([frequency])
+  @@index([isActive])
+  @@index([completedAt])
+  @@index([category])
+  @@map("quests")
+}
+
+model QuestCompletion {
+  id      String @id @default(uuid())
+  userId  String @map("user_id")
+  questId String @map("quest_id")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  xpGained Int @map("xp_gained")
+  bonusXP  Int @default(0) @map("bonus_xp")
+
+  completedAt DateTime @default(now()) @map("completed_at")
+
+  @@index([userId])
+  @@index([questId])
+  @@index([completedAt])
+  @@map("quest_completions")
+}
+
+// ============================================================================
+// ACHIEVEMENT MODELS
+// ============================================================================
+
+model Achievement {
+  id String @id @default(uuid())
+
+  // Display
+  title       String
+  description String
+  icon        String
+  rarity      String @default("common") // AchievementRarity enum
+
+  // Requirements
+  requirementType     String @map("requirement_type")  // AchievementType enum
+  requirementValue    Int    @map("requirement_value")
+  requirementMetadata Json?  @map("requirement_metadata")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@index([requirementType])
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String @id @default(uuid())
+  userId        String @map("user_id")
+  achievementId String @map("achievement_id")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([unlockedAt])
+  @@map("user_achievements")
+}
+
+// ============================================================================
+// STATS HISTORY MODEL
+// ============================================================================
+
+model StatsHistory {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date DateTime @db.Date
+
+  // Snapshot data
+  level            Int
+  totalXP          Int @map("total_xp")
+  questsCompleted  Int @map("quests_completed")
+
+  strength     Int
+  agility      Int
+  intelligence Int
+  vitality     Int
+  sense        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, date])
+  @@index([userId, date(sort: Desc)])
+  @@map("stats_history")
+}
+
+// ============================================================================
+// FRIENDSHIP MODEL (for future social features)
+// ============================================================================
+
+model Friendship {
+  id         String   @id @default(uuid())
+  initiatorId String  @map("initiator_id")
+  receiverId  String  @map("receiver_id")
+
+  initiator User @relation("FriendInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver  User @relation("FriendReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  status    String   @default("pending") // pending, accepted, rejected
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([initiatorId, receiverId])
+  @@index([initiatorId])
+  @@index([receiverId])
+  @@map("friendships")
+}
+
+// ============================================================================
+// LEADERBOARD CACHE (optional, for performance)
+// ============================================================================
+
+model LeaderboardCache {
+  id        String   @id @default(uuid())
+  type      String   // level, xp, streak
+  period    String   // daily, weekly, alltime
+  userId    String   @map("user_id")
+  rank      Int
+  value     Int
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([type, period, userId])
+  @@index([type, period, rank])
+  @@map("leaderboard_cache")
+}
+
+// ============================================================================
+// NOTIFICATIONS (for Telegram bot notifications)
+// ============================================================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String   // reminder, achievement, level_up, streak_warning
+  title     String
+  message   String
+  data      Json?    // Additional data
+  sentAt    DateTime? @map("sent_at")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([sentAt])
+  @@map("notifications")
+}

@@ -1,0 +1,432 @@
+# Cursor/Copilot Rules for Solo Leveling Telegram Mini App
+
+## Project Context
+This is a gamified habit tracker Telegram Mini App with Solo Leveling theme. Users complete daily quests (real-life tasks) to level up their character, earn XP, unlock achievements, and compete on leaderboards.
+
+## Code Generation Rules
+
+### Always Follow These Principles:
+1. **TypeScript First**: All code must be TypeScript with strict typing
+2. **Component Structure**: Use functional components with hooks
+3. **Styling**: Use Tailwind CSS classes, maintain dark Solo Leveling theme
+4. **Mobile-First**: Design for mobile since it's a Telegram Mini App
+5. **Performance**: Optimize for fast loading and smooth animations
+6. **Error Handling**: Always include try-catch and error states
+7. **Loading States**: Show loading indicators for async operations
+8. **Haptic Feedback**: Use Telegram haptic feedback on user interactions
+
+### Design System
+
+#### Colors (Tailwind Config)
+```typescript
+// Primary palette
+purple: { 600: '#8B5CF6', 700: '#7C3AED' }
+cyan: { 500: '#06B6D4', 600: '#0EA5E9' }
+slate: { 900: '#0F172A', 800: '#1E293B', 700: '#334155' }
+emerald: { 500: '#10B981' }
+red: { 500: '#EF4444' }
+amber: { 500: '#F59E0B' }
+```
+
+#### Component Patterns
+```tsx
+// Always use this pattern for cards
+<div className="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-purple-600 transition-colors">
+
+// Progress bars always have glow effect
+<div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+  <div className="h-full bg-gradient-to-r from-purple-600 to-cyan-500 shadow-lg shadow-purple-500/50 transition-all duration-500" />
+</div>
+
+// Buttons
+<button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 active:scale-95 shadow-lg shadow-purple-500/30">
+```
+
+### Component Structure
+```tsx
+// Standard component template
+interface ComponentProps {
+  // Props with JSDoc comments
+  /** Description of prop */
+  propName: Type;
+}
+
+export const Component: React.FC<ComponentProps> = ({ propName }) => {
+  // Hooks at top
+  const [state, setState] = useState();
+  const data = useCustomHook();
+
+  // Event handlers
+  const handleAction = async () => {
+    try {
+      // Implementation
+    } catch (error) {
+      console.error('Error:', error);
+      // Show error to user
+    }
+  };
+
+  // Loading state
+  if (loading) return <LoadingSpinner />;
+
+  // Error state
+  if (error) return <ErrorMessage error={error} />;
+
+  // Main render
+  return (
+    <div>
+      {/* Component content */}
+    </div>
+  );
+};
+```
+
+### State Management (Zustand)
+```typescript
+// Store pattern
+interface StoreState {
+  data: Type;
+  loading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchData: () => Promise<void>;
+  updateData: (data: Type) => void;
+  reset: () => void;
+}
+
+export const useStore = create<StoreState>((set) => ({
+  data: null,
+  loading: false,
+  error: null,
+
+  fetchData: async () => {
+    set({ loading: true, error: null });
+    try {
+      const data = await api.fetch();
+      set({ data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  updateData: (data) => set({ data }),
+  reset: () => set({ data: null, loading: false, error: null }),
+}));
+```
+
+### API Routes Pattern
+```typescript
+// API route structure
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { schema } from '../schemas';
+
+const router = Router();
+
+router.get('/', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const data = await service.getData(userId);
+    res.json({ data });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/', authenticate, validate(schema), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await service.create(userId, req.body);
+    res.status(201).json({ data: result });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;
+```
+
+### Telegram Integration
+```typescript
+// Always import and use Telegram SDK
+import { useHapticFeedback, useInitData } from '@telegram-apps/sdk-react';
+
+// In components
+const haptic = useHapticFeedback();
+const initData = useInitData();
+
+// Use haptic on interactions
+haptic.impactOccurred('medium'); // On button clicks
+haptic.notificationOccurred('success'); // On success
+haptic.notificationOccurred('error'); // On error
+```
+
+### Animation Patterns
+```tsx
+// Use Framer Motion for animations
+import { motion } from 'framer-motion';
+
+// Card entrance animation
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}
+>
+
+// List animations
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+>
+  {items.map((item, index) => (
+    <motion.div
+      key={item.id}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+    />
+  ))}
+</motion.div>
+
+// Level up animation (special case)
+<motion.div
+  initial={{ scale: 0, rotate: -180 }}
+  animate={{ scale: 1, rotate: 0 }}
+  transition={{ type: 'spring', duration: 0.8 }}
+/>
+```
+
+### Database Queries (Prisma)
+```typescript
+// Always include error handling and relations
+try {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      quests: {
+        where: { status: 'pending' },
+        orderBy: { createdAt: 'desc' }
+      },
+      achievements: true,
+    },
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return user;
+} catch (error) {
+  console.error('Database error:', error);
+  throw error;
+}
+```
+
+### Quest Completion Logic
+```typescript
+// Standard quest completion flow
+const completeQuest = async (questId: string, userId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Get quest
+    const quest = await tx.quest.findUnique({ where: { id: questId } });
+    if (!quest) throw new Error('Quest not found');
+
+    // 2. Mark as completed
+    const updated = await tx.quest.update({
+      where: { id: questId },
+      data: {
+        status: 'completed',
+        completedAt: new Date(),
+        streak: { increment: 1 }
+      }
+    });
+
+    // 3. Add XP to user
+    const user = await tx.user.update({
+      where: { id: userId },
+      data: {
+        currentXP: { increment: quest.xpReward },
+        totalTasksCompleted: { increment: 1 }
+      }
+    });
+
+    // 4. Check for level up
+    const nextLevelXP = calculateXPForLevel(user.level + 1);
+    if (user.currentXP >= nextLevelXP) {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          level: { increment: 1 },
+          currentXP: user.currentXP - nextLevelXP
+        }
+      });
+      return { quest: updated, levelUp: true, newLevel: user.level + 1 };
+    }
+
+    // 5. Check achievements
+    await checkAndUnlockAchievements(tx, userId, user);
+
+    return { quest: updated, levelUp: false };
+  });
+};
+```
+
+### XP Calculations
+```typescript
+// Always use these formulas
+export const calculateXPForLevel = (level: number): number => {
+  return Math.floor(100 * Math.pow(level, 1.5));
+};
+
+export const calculateTotalXP = (level: number): number => {
+  let total = 0;
+  for (let i = 1; i <= level; i++) {
+    total += calculateXPForLevel(i);
+  }
+  return total;
+};
+
+export const getLevelFromXP = (xp: number): number => {
+  let level = 1;
+  let accumulated = 0;
+  while (accumulated + calculateXPForLevel(level) <= xp) {
+    accumulated += calculateXPForLevel(level);
+    level++;
+  }
+  return level;
+};
+```
+
+### Testing
+```typescript
+// Component test template
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Component } from './Component';
+
+describe('Component', () => {
+  it('renders correctly', () => {
+    render(<Component prop="value" />);
+    expect(screen.getByText('Expected Text')).toBeInTheDocument();
+  });
+
+  it('handles user interaction', async () => {
+    render(<Component />);
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+    expect(await screen.findByText('Result')).toBeInTheDocument();
+  });
+});
+```
+
+### File Naming
+- Components: PascalCase (QuestCard.tsx)
+- Hooks: camelCase with 'use' prefix (useQuests.ts)
+- Utils: camelCase (xpCalculations.ts)
+- Types: PascalCase (User.ts) or use index.ts
+- Services: camelCase (api.ts)
+- Tests: same as file with .test.ts suffix
+
+### Import Order
+```typescript
+// 1. React and external libraries
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+// 2. Telegram SDK
+import { useHapticFeedback } from '@telegram-apps/sdk-react';
+
+// 3. Internal hooks and stores
+import { useQuests } from '@/hooks/useQuests';
+import { useUserStore } from '@/store/userStore';
+
+// 4. Components
+import { QuestCard } from '@/components/quest/QuestCard';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+
+// 5. Utils and types
+import { calculateXPForLevel } from '@/utils/xpCalculations';
+import type { Quest } from '@/types';
+
+// 6. Styles (if any)
+import styles from './styles.module.css';
+```
+
+### Environment Variables
+```typescript
+// Always validate env vars
+const requiredEnvVars = [
+  'DATABASE_URL',
+  'TELEGRAM_BOT_TOKEN',
+  'JWT_SECRET',
+] as const;
+
+requiredEnvVars.forEach((envVar) => {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+});
+```
+
+### Error Messages
+- User-facing: Friendly and helpful
+- Logs: Detailed with context
+- Never expose sensitive data in error messages
+
+### Comments
+- Add JSDoc for public functions and components
+- Explain complex logic
+- Don't state the obvious
+- Use TODO: for future improvements
+
+### Performance Rules
+1. Use React.memo for expensive components
+2. Implement virtualization for long lists
+3. Lazy load routes and heavy components
+4. Optimize images (WebP format, proper sizing)
+5. Debounce search inputs
+6. Cache API responses in store
+7. Use Prisma select to limit data fetching
+
+### Security Rules
+1. Validate all user inputs
+2. Sanitize data before displaying
+3. Use prepared statements (Prisma handles this)
+4. Validate Telegram initData signature
+5. Implement rate limiting
+6. Use HTTPS in production
+7. Set proper CORS policies
+8. Never log sensitive data
+
+## When Creating New Features:
+1. Start with types/interfaces
+2. Create database schema if needed
+3. Build API endpoint with validation
+4. Create service layer for business logic
+5. Build custom hook for frontend
+6. Create components
+7. Add to routing
+8. Write tests
+9. Update documentation
+
+## When Debugging:
+1. Check browser console for errors
+2. Verify API responses in Network tab
+3. Check database queries with Prisma logging
+4. Test Telegram integration in actual Telegram app
+5. Verify types are correct
+6. Check loading and error states
+
+## Command Shortcuts:
+- `npm run dev` - Start dev server
+- `npm run build` - Production build
+- `npm run test` - Run tests
+- `npm run lint` - Lint code
+- `npm run format` - Format code
+- `npm run prisma:studio` - Open Prisma Studio
+- `npm run prisma:generate` - Generate Prisma client
+- `npm run prisma:migrate` - Run migrations
