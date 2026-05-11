@@ -18,6 +18,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed-dev": "tsx prisma/seed-dev-users.ts",
     "build": "tsc",
     "clean": "rm -rf dist node_modules/.prisma"
   },
@@ -25,7 +26,9 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "5.22.0"
+    "@prisma/client": "5.22.0",
+    "@types/bcryptjs": "^3.0.0",
+    "bcryptjs": "^3.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

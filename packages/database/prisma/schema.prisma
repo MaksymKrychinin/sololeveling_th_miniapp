@@ -26,6 +26,9 @@ model User {
   lastName   String? @db.VarChar(255)
   avatar     String?
 
+  // Dev Login (optional for local testing)
+  passwordHash String? @db.VarChar(255)
+
   // Game Stats
   level             Int      @default(1)
   currentXP         Int      @default(0)
