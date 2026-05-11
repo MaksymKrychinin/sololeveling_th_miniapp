@@ -41,6 +41,32 @@ router.post('/refresh', async (req, res) => {
   });
 });
 
+// POST /api/v1/auth/dev-login - Dev login (only in development)
+router.post('/dev-login', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      success: false,
+      error: { message: 'Dev login is only available in development' },
+    });
+  }
+
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'username and password are required' },
+    });
+  }
+
+  const result = await authService.authenticateWithDevCredentials(username, password);
+
+  res.json({
+    success: true,
+    data: result,
+  });
+});
+
 // POST /api/v1/auth/logout - Logout user
 router.post('/logout', async (req, res) => {
   // For JWT, logout is handled client-side by removing the token

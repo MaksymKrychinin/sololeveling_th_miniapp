@@ -31,9 +31,9 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Unauthorized - logout
+      // Unauthorized - logout and redirect to login
       useUserStore.getState().logout();
-      window.location.href = '/';
+      window.location.href = '/login';
     }
 
     const errorMessage =

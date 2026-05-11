@@ -116,6 +116,65 @@ export class AuthService {
   }
 
   /**
+   * Authenticate with dev credentials (development only)
+   */
+  async authenticateWithDevCredentials(username: string, password: string) {
+    // Simple dev credentials check
+    const validCredentials = {
+      'dev': 'dev123',
+      'hunter': 'hunter123',
+      'test': 'test123',
+    };
+
+    if (validCredentials[username as keyof typeof validCredentials] !== password) {
+      throw new AppError(401, 'Invalid credentials');
+    }
+
+    // Create a fake telegram ID based on username
+    const fakeTelegramId = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 1000000);
+
+    // Find or create user
+    let user = await userRepository.findByTelegramId(fakeTelegramId);
+
+    if (!user) {
+      user = await userRepository.create({
+        telegramId: fakeTelegramId,
+        username: username,
+        firstName: username.charAt(0).toUpperCase() + username.slice(1),
+        lastName: 'User',
+        avatar: undefined,
+      });
+    }
+
+    // Generate JWT token
+    const token = this.generateToken(user.id);
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        telegramId: Number(user.telegramId),
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        level: user.level,
+        currentXP: user.currentXP,
+        title: user.title,
+        avatar: user.avatar,
+        stats: {
+          strength: user.strength,
+          agility: user.agility,
+          intelligence: user.intelligence,
+          vitality: user.vitality,
+          sense: user.sense,
+        },
+        streak: user.streak,
+        totalTasksCompleted: user.totalTasksCompleted,
+      },
+    };
+  }
+
+  /**
    * Generate JWT token
    */
   generateToken(userId: string): string {
