@@ -16,12 +16,12 @@ export interface ProgressBarProps {
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   value,
   max = 100,
-  label,
+  label = '',
   showPercentage = true,
   size = 'md',
   variant = 'primary',
   animated = true,
-  className,
+  className = '',
 }) => {
   const percentage = Math.min((value / max) * 100, 100);
 

@@ -20,6 +20,26 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen bg-dark-900">
+      {/* Top Header */}
+      <header className="bg-dark-800 border-b border-dark-700 px-4 py-3">
+        <div className="container mx-auto max-w-2xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            <span className="font-display font-bold text-primary-400">Solo Leveling</span>
+          </div>
+          <button
+            onClick={() => navigate('/settings')}
+            className={`p-2 rounded-lg transition-colors ${
+              location.pathname === '/settings'
+                ? 'bg-primary-600 text-white'
+                : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
+            }`}
+          >
+            <span className="text-xl">⚙️</span>
+          </button>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto pb-20">
         <div className="container mx-auto px-4 py-6 max-w-2xl">

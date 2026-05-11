@@ -15,3 +15,4 @@ export type { ProgressBarProps } from './components/ProgressBar';
 export type { BadgeProps } from './components/Badge';
 export type { ModalProps } from './components/Modal';
 export type { ToastProps } from './components/Toast';
+export type { SpinnerProps } from './components/Spinner';

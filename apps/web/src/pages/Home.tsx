@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useQuests, useCompleteQuest } from '../hooks/useApi';
 import { useUserStore } from '../store/userStore';
 import { Card, Button, ProgressBar, Badge, Spinner, useToast } from '@solo-leveling/ui';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LevelUpAnimation } from '../components/animations/LevelUpAnimation';
 
 const Home = () => {
   const { user } = useUserStore();
@@ -11,6 +13,12 @@ const Home = () => {
   const { addToast } = useToast();
   const { impact, notification } = useHapticFeedback();
 
+  const [levelUpData, setLevelUpData] = useState<{
+    show: boolean;
+    newLevel: number;
+    newTitle: string;
+  }>({ show: false, newLevel: 0, newTitle: '' });
+
   const quests = questsData?.data || [];
   const todayQuests = quests.filter((q: any) => q.frequency === 'daily');
   const completedToday = todayQuests.filter((q: any) => q.status === 'completed');
@@ -18,10 +26,22 @@ const Home = () => {
   const handleCompleteQuest = async (questId: string, questTitle: string) => {
     try {
       impact('medium');
-      await completeQuest.mutateAsync(questId);
+      const response = await completeQuest.mutateAsync(questId);
       notification('success');
+      
+      // Check if user leveled up
+      if (response?.data?.levelUp) {
+        setLevelUpData({
+          show: true,
+          newLevel: response.data.levelUp.newLevel,
+          newTitle: response.data.levelUp.newTitle,
+        });
+        // Vibrate for level up
+        impact('heavy');
+      }
+      
       addToast({
-        message: `${questTitle} completed! +XP gained`,
+        message: `${questTitle} completed! +${response?.data?.xpGained || 0} XP gained`,
         type: 'success',
       });
     } catch (error: any) {
@@ -184,6 +204,14 @@ const Home = () => {
           </div>
         </Card>
       )}
+      
+      {/* Level Up Animation */}
+      <LevelUpAnimation
+        isOpen={levelUpData.show}
+        newLevel={levelUpData.newLevel}
+        newTitle={levelUpData.newTitle}
+        onClose={() => setLevelUpData({ show: false, newLevel: 0, newTitle: '' })}
+      />
     </div>
   );
 };

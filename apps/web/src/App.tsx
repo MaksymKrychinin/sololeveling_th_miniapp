@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Quests from './pages/Quests';
 import Achievements from './pages/Achievements';
 import Leaderboard from './pages/Leaderboard';
+import Settings from './pages/Settings';
 
 // Layout
 import AppLayout from './components/layout/AppLayout';
@@ -46,6 +47,7 @@ function App() {
                         <Route path="/quests" element={<Quests />} />
                         <Route path="/achievements" element={<Achievements />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
+                        <Route path="/settings" element={<Settings />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                       </Routes>
                     </AppLayout>

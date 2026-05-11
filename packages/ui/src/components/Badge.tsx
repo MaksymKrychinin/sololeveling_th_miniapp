@@ -12,7 +12,7 @@ export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = 'default',
   size = 'md',
-  className,
+  className = '',
 }) => {
   const baseClass = clsx(
     'inline-flex items-center justify-center rounded-full font-medium',

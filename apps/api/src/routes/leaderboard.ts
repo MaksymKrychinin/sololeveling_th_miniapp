@@ -16,15 +16,21 @@ router.get('/', async (req: AuthRequest, res) => {
 
   const leaderboard = await userRepository.getLeaderboard(limitNum, leaderboardType);
 
+  // Convert BigInt to Number for JSON serialization
+  const serializedLeaderboard = leaderboard.map((user) => ({
+    ...user,
+    totalXP: Number(user.totalXP),
+  }));
+
   // Find current user's position
   const currentUserId = req.userId!;
-  const currentUserPosition = leaderboard.findIndex((u) => u.id === currentUserId);
+  const currentUserPosition = serializedLeaderboard.findIndex((u) => u.id === currentUserId);
 
   res.json({
     success: true,
     data: {
       type: leaderboardType,
-      leaderboard,
+      leaderboard: serializedLeaderboard,
       currentUserPosition: currentUserPosition !== -1 ? currentUserPosition + 1 : null,
     },
   });
