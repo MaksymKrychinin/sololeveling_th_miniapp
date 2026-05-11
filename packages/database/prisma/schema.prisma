@@ -1,0 +1,260 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================
+// User Model
+// ===========================
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Telegram Info
+  telegramId BigInt  @unique
+  username   String  @db.VarChar(255)
+  firstName  String? @db.VarChar(255)
+  lastName   String? @db.VarChar(255)
+  avatar     String?
+
+  // Game Stats
+  level             Int      @default(1)
+  currentXP         Int      @default(0)
+  totalXP           BigInt   @default(0)
+  title             String   @default("E-Rank Hunter")
+  streak            Int      @default(0)
+  longestStreak     Int      @default(0)
+  totalTasksCompleted Int    @default(0)
+
+  // Character Stats
+  strength     Int @default(0)
+  agility      Int @default(0)
+  intelligence Int @default(0)
+  vitality     Int @default(0)
+  sense        Int @default(0)
+
+  // Metadata
+  timezone     String?
+  lastActiveAt DateTime @default(now())
+  lastStreakAt DateTime @default(now())
+
+  // Relations
+  quests            Quest[]
+  achievements      UserAchievement[]
+  questCompletions  QuestCompletion[]
+  notifications     Notification[]
+
+  @@index([telegramId])
+  @@index([level])
+  @@index([totalXP])
+  @@index([streak])
+  @@map("users")
+}
+
+// ===========================
+// Quest Models
+// ===========================
+
+model QuestTemplate {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  category    String   @db.VarChar(50) // QuestCategory enum
+  xpReward    Int
+
+  // Stat Bonus (JSON)
+  statBonus   Json? // { stat: string, amount: number }
+
+  frequency   String   @db.VarChar(50) // QuestFrequency enum
+  icon        String   @db.VarChar(100)
+  difficulty  String   @db.VarChar(50) // QuestDifficulty enum
+  isDefault   Boolean  @default(false)
+
+  // Relations
+  quests      Quest[]
+
+  @@index([category])
+  @@index([isDefault])
+  @@map("quest_templates")
+}
+
+model Quest {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  templateId  String?
+  template    QuestTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  category    String   @db.VarChar(50)
+  xpReward    Int
+
+  // Stat Bonus (JSON)
+  statBonus   Json?
+
+  frequency   String   @db.VarChar(50)
+  status      String   @default("pending") @db.VarChar(50) // QuestStatus enum
+  completedAt DateTime?
+  streak      Int      @default(0)
+  icon        String   @db.VarChar(100)
+  difficulty  String   @db.VarChar(50)
+  isActive    Boolean  @default(true)
+
+  // Relations
+  completions QuestCompletion[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([isActive])
+  @@index([completedAt])
+  @@map("quests")
+}
+
+model QuestCompletion {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  questId     String
+  quest       Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  xpGained    Int
+  statsGained Json? // { stat: string, amount: number }
+  completedAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([questId])
+  @@index([completedAt])
+  @@map("quest_completions")
+}
+
+// ===========================
+// Achievement Models
+// ===========================
+
+model Achievement {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  icon        String   @db.VarChar(100)
+  rarity      String   @db.VarChar(50) // AchievementRarity enum
+
+  // Requirement (JSON)
+  requirement Json // { type: string, value: number, metadata?: object }
+
+  // Reward (JSON)
+  reward      Json? // { xp?: number, title?: string, badge?: string }
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@index([rarity])
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  unlockedAt    DateTime @default(now())
+  progress      Int      @default(0)
+  isCompleted   Boolean  @default(false)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([isCompleted])
+  @@map("user_achievements")
+}
+
+// ===========================
+// Notification Model
+// ===========================
+
+model Notification {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        String   @db.VarChar(50) // NotificationType enum
+  title       String   @db.VarChar(255)
+  message     String   @db.Text
+  data        Json? // Additional data
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ===========================
+// Statistics & Analytics
+// ===========================
+
+model DailyStats {
+  id          String   @id @default(uuid())
+  date        DateTime @db.Date
+  userId      String
+
+  questsCompleted Int @default(0)
+  xpGained        Int @default(0)
+  streakStatus    Boolean @default(false)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("daily_stats")
+}
+
+// ===========================
+// Session Model (for auth)
+// ===========================
+
+model Session {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  token       String   @unique @db.VarChar(500)
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}

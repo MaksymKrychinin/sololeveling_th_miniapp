@@ -1,64 +1,52 @@
 # Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build outputs
-dist/
-dist-ssr/
-build/
-*.local
-
-# IDE
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+node_modules
+.pnp
+.pnp.js
 
 # Testing
-coverage/
-*.lcov
-
-# Logs
-logs/
+coverage
 *.log
 
-# Prisma
-prisma/*.db
-prisma/*.db-journal
+# Production
+dist
+build
+.next
+out
 
-# Temporary files
-tmp/
-temp/
-*.tmp
+# Environment
+.env
+.env*.local
+.env.production
+
+# Cache
+.turbo
+.cache
+*.tsbuildinfo
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Optional npm cache directory
-.npm
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
 
-# Optional eslint cache
-.eslintcache
+# Database
+*.db
+*.db-journal
 
-# TypeScript cache
-*.tsbuildinfo
+# Docker
+docker-data/
+*.log
 
-# Production
-/server/dist
-/server/build
+# Misc
+*.pem
+.vercel
+.netlify

@@ -1,90 +1,56 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
-    container_name: solo_leveling_db_dev
-    restart: unless-stopped
+    image: postgres:16-alpine
+    container_name: solo-leveling-postgres-dev
     environment:
+      POSTGRES_DB: solo_leveling_dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: solo_leveling_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-    networks:
-      - solo_leveling_network_dev
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  # Backend (with hot reload)
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev.backend
-    container_name: solo_leveling_backend_dev
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/solo_leveling_db
-      JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+  redis:
+    image: redis:7-alpine
+    platform: linux/arm64/v8
+    container_name: solo-leveling-redis-dev
     ports:
-      - "3000:3000"
-    depends_on:
-      - postgres
-    networks:
-      - solo_leveling_network_dev
+      - "6379:6379"
     volumes:
-      - ./server:/app/server
-      - ./prisma:/app/prisma
-      - ./data:/app/data
-      - /app/node_modules
-    command: sh -c "npx prisma migrate dev && npm run server:dev"
+      - redis_dev_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  # Frontend (with hot reload)
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev.frontend
-    container_name: solo_leveling_frontend_dev
-    restart: unless-stopped
+  mailhog:
+    image: axllent/mailpit:latest
+    platform: linux/arm64/v8
+    container_name: solo-leveling-mailpit
     ports:
-      - "5173:5173"
-    depends_on:
-      - backend
-    networks:
-      - solo_leveling_network_dev
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
-      - ./index.html:/app/index.html
-      - /app/node_modules
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
     environment:
-      - VITE_API_URL=http://localhost:3000
-
-  # Prisma Studio
-  prisma-studio:
-    image: node:18-alpine
-    container_name: solo_leveling_prisma_studio_dev
-    working_dir: /app
-    volumes:
-      - ./:/app
-    ports:
-      - "5555:5555"
-    networks:
-      - solo_leveling_network_dev
-    depends_on:
-      - postgres
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/solo_leveling_db
-    command: sh -c "npm install && npx prisma studio --browser none --port 5555"
+      MP_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+    logging:
+      driver: none
 
 volumes:
-  postgres_data_dev:
-    driver: local
+  postgres_dev_data:
+    name: solo-leveling-postgres-dev
+  redis_dev_data:
+    name: solo-leveling-redis-dev
 
 networks:
-  solo_leveling_network_dev:
-    driver: bridge
+  default:
+    name: solo-leveling-dev-network

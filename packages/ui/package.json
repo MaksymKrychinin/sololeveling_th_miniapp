@@ -1,0 +1,30 @@
+{
+  "name": "@solo-leveling/ui",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@solo-leveling/shared": "workspace:*",
+    "framer-motion": "^11.0.8",
+    "clsx": "^2.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@solo-leveling/config": "workspace:*",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}

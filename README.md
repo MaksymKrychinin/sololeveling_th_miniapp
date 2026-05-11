@@ -1,100 +1,65 @@
-# 🎮 Solo Leveling: Daily Quest Tracker
+# 🎮 Solo Leveling - Telegram Mini App
 
-> Transform your daily habits into an epic RPG adventure inspired by Solo Leveling
+<div align="center">
 
-A gamified habit tracking Telegram Mini App where completing real-life tasks helps you level up, earn achievements, and become a legendary hunter.
+![Solo Leveling](https://img.shields.io/badge/Solo_Leveling-Habit_Tracker-8b5cf6?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-## 🌟 Features
+Transform your daily habits into an epic RPG adventure! 🚀
 
-### Core Gameplay
-- **Quest System**: Complete daily tasks to gain XP and level up
-- **Character Stats**: Build your stats through different task categories
-  - 💪 Strength (Gym, Sports)
-  - 🏃 Agility (Running, Cardio)
-  - 🧠 Intelligence (Reading, Learning)
-  - ❤️ Vitality (Health, Nutrition)
-  - 👁️ Sense (Mindfulness, Awareness)
-- **Ranking System**: Progress from E-Rank to Shadow Monarch
-- **Achievements**: Unlock special titles and badges
-- **Streak Tracking**: Maintain your daily quest streaks for bonus rewards
-- **Leaderboards**: Compete with friends
+</div>
 
-### Quest Categories
-- **Hygiene**: Shower, brush teeth, skincare
-- **Health**: Water intake, healthy meals, vitamins
-- **Fitness**: Gym, running, steps, stretching
-- **Learning**: Reading, vocabulary, studying
-- **Mindfulness**: Meditation, journaling, gratitude
-- **Productivity**: Tasks, planning, organization
-- **Custom**: Create your own quests
+## 📖 Overview
 
-## 🎨 Design
+Solo Leveling is a gamified habit tracking Telegram Mini App inspired by the popular anime/manga. Complete daily quests, level up your character, unlock achievements, and compete with friends on the leaderboard!
 
-Inspired by Solo Leveling's dark, futuristic aesthetic:
-- Deep purple and cyan color scheme
-- Dark mode interface
-- Glowing effects and animations
-- Card-based layout
-- Smooth transitions and particle effects
+## ✨ Features
 
-## 🛠️ Tech Stack
+- 🎯 **Quest System**: Transform daily tasks into RPG quests
+- ⚡ **XP & Leveling**: Gain experience and rise through hunter ranks
+- 📊 **Character Stats**: Strength, Agility, Intelligence, Vitality, Sense
+- 🏆 **Achievements**: Unlock titles and badges
+- 🔥 **Streak Tracking**: Maintain your daily quest completion streak
+- 👥 **Leaderboards**: Compete with friends globally
+- 🎨 **Solo Leveling Theme**: Dark, futuristic UI with smooth animations
+- 📱 **Telegram Integration**: Native Telegram Mini App experience
 
-### Frontend
-- React 18 with TypeScript
-- Tailwind CSS
-- @telegram-apps/sdk-react
-- Zustand for state management
-- Framer Motion for animations
+## 🏗️ Architecture
 
-### Backend
-- Node.js with Express or Next.js API routes
-- PostgreSQL database
-- Prisma ORM
-- JWT authentication
-- RESTful API
+This project uses a modern **monorepo** structure powered by:
 
-### DevOps
-- Docker for containerization
-- GitHub Actions for CI/CD
-- Vercel/Railway for deployment
+- **Turborepo**: Fast builds and caching
+- **pnpm**: Efficient package management
+- **TypeScript**: Type-safe code across all packages
+- **Docker**: Containerized deployment
 
-## 📁 Project Structure
+### Project Structure
 
 ```
-/
-├── src/
-│   ├── components/      # React components
-│   │   ├── common/      # Reusable UI components
-│   │   ├── layout/      # Layout components
-│   │   ├── quest/       # Quest-related components
-│   │   ├── profile/     # Profile components
-│   │   └── animations/  # Animation components
-│   ├── pages/           # App pages/routes
-│   ├── hooks/           # Custom React hooks
-│   ├── store/           # State management
-│   ├── services/        # API services
-│   ├── utils/           # Helper functions
-│   ├── types/           # TypeScript types
-│   └── styles/          # Global styles
-├── server/              # Backend code
-│   ├── routes/          # API routes
-│   ├── controllers/     # Request handlers
-│   ├── services/        # Business logic
-│   ├── middleware/      # Express middleware
-│   └── database/        # Database schema & migrations
-├── prisma/
-│   └── schema.prisma    # Database schema
-├── public/              # Static assets
-└── tests/               # Test files
+├── apps/
+│   ├── web/          # React frontend (Vite + Tailwind)
+│   ├── api/          # Backend API (Express + Prisma)
+│   └── bot/          # Telegram Bot (Grammy)
+├── packages/
+│   ├── database/     # Prisma schema & client
+│   ├── shared/       # Shared types, utils, constants
+│   ├── ui/           # UI component library
+│   ├── telegram-sdk/ # Telegram Mini App SDK wrapper
+│   └── config/       # Shared configurations
+└── docker/           # Docker configurations
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- Telegram Bot Token
-- npm or yarn
+
+- Node.js >= 20.0.0
+- pnpm >= 8.0.0
+- Docker & Docker Compose
+- Telegram Bot Token (from [@BotFather](https://t.me/botfather))
 
 ### Installation
 
@@ -106,174 +71,204 @@ cd test_telegram_mini_app
 
 2. **Install dependencies**
 ```bash
-npm install
+pnpm install
 ```
 
-3. **Set up environment variables**
+3. **Setup environment variables**
 ```bash
 cp .env.example .env
+# Edit .env with your configuration
 ```
 
-Edit `.env` with your configuration:
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/solo_leveling"
-TELEGRAM_BOT_TOKEN="your_bot_token"
-JWT_SECRET="your_secret_key"
-NODE_ENV="development"
-API_URL="http://localhost:3000"
-```
-
-4. **Set up database**
+4. **Start development services**
 ```bash
-# Run migrations
-npm run prisma:migrate
+# Start PostgreSQL & Redis
+pnpm docker:dev
 
-# Seed initial data (optional)
-npm run prisma:seed
+# Run database migrations
+pnpm db:migrate
+
+# Seed the database
+pnpm db:seed
 ```
 
-5. **Start development server**
+5. **Start development servers**
 ```bash
-npm run dev
+# Start all apps in parallel
+pnpm dev
 ```
 
-The app should now be running at `http://localhost:5173` (frontend) and `http://localhost:3000` (API)
+The apps will be available at:
+- Web App: http://localhost:3000
+- API: http://localhost:3001
+- Database Studio: http://localhost:5555 (run `pnpm db:studio`)
+
+## 📦 Available Commands
+
+### Root Commands
+```bash
+pnpm dev              # Start all apps in development mode
+pnpm build            # Build all packages and apps
+pnpm test             # Run all tests
+pnpm lint             # Lint all packages
+pnpm format           # Format code with Prettier
+pnpm clean            # Clean all build artifacts
+```
+
+### Database Commands
+```bash
+pnpm db:migrate       # Run database migrations
+pnpm db:push          # Push schema changes (dev)
+pnpm db:studio        # Open Prisma Studio
+pnpm db:seed          # Seed the database
+```
+
+### Docker Commands
+```bash
+pnpm docker:dev       # Start development services
+pnpm docker:prod      # Start production stack
+pnpm docker:down      # Stop all containers
+```
+
+## 🎨 Tech Stack
+
+### Frontend
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Zustand** - State management
+- **React Query** - Data fetching
+- **React Router** - Routing
+
+### Backend
+- **Express** - Web framework
+- **Prisma** - ORM
+- **PostgreSQL** - Database
+- **Redis** - Caching
+- **Zod** - Validation
+- **JWT** - Authentication
+- **Winston** - Logging
+
+### DevOps
+- **Docker** - Containerization
+- **Turborepo** - Monorepo management
+- **pnpm** - Package manager
+- **GitHub Actions** - CI/CD
+- **Nginx** - Reverse proxy
+
+## 🎮 Game Mechanics
+
+### Leveling System
+XP Formula: `XP = 100 * level^1.5`
+
+### Hunter Ranks
+- Level 1-9: **E-Rank Hunter**
+- Level 10-24: **D-Rank Hunter**
+- Level 25-49: **C-Rank Hunter**
+- Level 50-74: **B-Rank Hunter**
+- Level 75-99: **A-Rank Hunter**
+- Level 100-149: **S-Rank Hunter**
+- Level 150-199: **National Level Hunter**
+- Level 200+: **Shadow Monarch**
+
+### Quest Categories
+- 🚿 **Hygiene**: Morning routine, skincare
+- 💪 **Fitness**: Workouts, running, steps
+- 🍎 **Health**: Water, meals, sleep
+- 📚 **Learning**: Reading, studying, languages
+- 🧘 **Mindfulness**: Meditation, journaling
+- ✅ **Productivity**: Tasks, planning
+- 👥 **Social**: Interactions, calls
 
 ## 📱 Telegram Bot Setup
 
-1. Create a new bot with [@BotFather](https://t.me/botfather)
+1. Create a bot with [@BotFather](https://t.me/botfather)
 2. Get your bot token
-3. Set up Mini App with BotFather command: `/newapp`
-4. Configure Web App URL to your deployed URL
-5. Set up bot commands:
-```
-start - Start your journey as a Hunter
-profile - View your profile and stats
-quests - See today's quests
-achievements - View your achievements
-leaderboard - See top hunters
-settings - Configure your preferences
-```
+3. Set up Mini App:
+   ```
+   /newapp
+   /setmenubutton - Set the menu button URL
+   ```
+4. Configure webhook (production):
+   ```bash
+   curl -X POST https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook \
+     -d "url=https://yourdomain.com/api/webhook"
+   ```
+
+## 🔒 Security
+
+- ✅ Telegram InitData validation
+- ✅ JWT authentication
+- ✅ Rate limiting
+- ✅ Input sanitization
+- ✅ CORS configuration
+- ✅ Helmet security headers
+- ✅ SQL injection prevention (Prisma)
+
+## 📊 Performance
+
+- ⚡ Code splitting
+- ⚡ Image optimization
+- ⚡ Redis caching
+- ⚡ Database indexing
+- ⚡ Lazy loading
+- ⚡ Service Worker
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
+# Unit tests
+pnpm test
 
 # E2E tests
-npm run test:e2e
+pnpm test:e2e
+
+# Coverage
+pnpm test:coverage
 ```
 
-## 📦 Deployment
+## 📝 Documentation
 
-### Docker Deployment (Recommended)
-
-**Production mode:**
-```bash
-# Build and start
-docker-compose up -d
-
-# Or use make
-make prod
-```
-
-**With custom domain:**
-```bash
-# Update nginx.conf with your domain
-# Then deploy
-docker-compose up -d --build
-```
-
-### Traditional Deployment
-
-**Build for production:**
-```bash
-npm run build
-npm run server:build
-```
-
-**Deploy to services:**
-- Frontend → Vercel/Netlify
-- Backend → Railway/Render
-- Database → Railway/Supabase
-
-See [DOCKER.md](./DOCKER.md) for complete deployment guide.
-
-## 📊 Database Schema
-
-### Key Tables
-- `users`: User profiles and authentication
-- `quests`: Quest definitions and templates
-- `user_quests`: User's active quests
-- `quest_completions`: Quest completion history
-- `achievements`: Achievement definitions
-- `user_achievements`: Unlocked achievements
-- `stats_history`: Daily stats snapshots
-- `leaderboard`: Cached leaderboard data
-
-## 🎯 Roadmap
-
-### Phase 1: MVP (Current)
-- [x] Project setup and documentation
-- [ ] Basic authentication
-- [ ] Quest system (create, complete, delete)
-- [ ] XP and leveling system
-- [ ] User profile with stats
-- [ ] Dark mode UI with Solo Leveling theme
-
-### Phase 2: Enhanced Features
-- [ ] Achievement system
-- [ ] Streak tracking with bonuses
-- [ ] Quest templates library
-- [ ] Custom quest creation
-- [ ] Notifications via Telegram bot
-
-### Phase 3: Social Features
-- [ ] Leaderboards (daily, weekly, all-time)
-- [ ] Friend system
-- [ ] Quest sharing
-- [ ] Weekly challenges
-- [ ] Guild/Party system
-
-### Phase 4: Advanced Gamification
-- [ ] Dungeon mode (special challenges)
-- [ ] Equipment system (cosmetic items)
-- [ ] Seasonal events
-- [ ] Title collection
-- [ ] Statistics and analytics dashboard
-- [ ] Quest scheduler and reminders
+- **[Quick Start Guide](./QUICKSTART.md)** - Get up and running in 5 minutes
+- **[Architecture Overview](./ARCHITECTURE.md)** - System design & patterns
+- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - 8-week development roadmap
+- **[Progress Tracker](./PROGRESS.md)** - Detailed checklist with completion status
+- **[Final Summary](./FINAL_SUMMARY.md)** - Complete project overview
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute
+- **[Changelog](./CHANGELOG.md)** - Version history
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our contributing guidelines.
+Contributions are welcome! Please read our contributing guidelines first.
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- Solo Leveling (manhwa/anime) for inspiration
-- Telegram for the Mini Apps platform
-- All contributors and users
+- Inspired by [Solo Leveling](https://en.wikipedia.org/wiki/Solo_Leveling) by Chugong
+- Built with [Telegram Mini Apps](https://core.telegram.org/bots/webapps)
+- Icons from [Lucide Icons](https://lucide.dev/)
 
-## 📧 Contact
+## 📬 Contact
 
-For questions or support, contact [@your_telegram_username]
+For questions or support, reach out via [Telegram](https://t.me/your_username)
 
 ---
 
-**Arise and become the strongest Hunter! 🗡️**
+<div align="center">
+
+**Rise from E-Rank to Shadow Monarch! 🚀**
+
+Made with ❤️ by the Solo Leveling Team
+
+</div>
