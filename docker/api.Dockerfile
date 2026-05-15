@@ -40,7 +40,7 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/config/package.json ./packages/config/
 COPY apps/api/package.json ./apps/api/
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate && \
-    pnpm install --frozen-lockfile --prod
+    HUSKY=0 pnpm install --frozen-lockfile --prod
 
 # Copy built files
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
