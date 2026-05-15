@@ -7,6 +7,8 @@ WORKDIR /app
 
 # Dependencies stage
 FROM base AS dependencies
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/database/package.json ./packages/database/
@@ -35,6 +37,7 @@ RUN apk add --no-cache openssl libc6-compat python3 make g++
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/database/package.json ./packages/database/
+COPY packages/config/package.json ./packages/config/
 COPY apps/bot/package.json ./apps/bot/
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate && \
     pnpm install --frozen-lockfile --prod
