@@ -46,13 +46,13 @@ const Quests = () => {
       ? templates
       : templates.filter((t: any) => t.category === selectedCategory);
 
-  const handleAddQuest = async (templateId: string, title: string) => {
+  const handleAddQuest = async (templateId: string) => {
     try {
       impact('medium');
       await createFromTemplate.mutateAsync(templateId);
       notification('success');
       addToast({
-        message: `"${title}" added to your quests!`,
+        message: 'Quest added successfully!',
         type: 'success',
       });
     } catch (error: any) {
@@ -64,12 +64,12 @@ const Quests = () => {
     }
   };
 
-  const handleToggleQuest = async (questId: string, currentStatus: boolean, title: string) => {
+  const handleToggleQuest = async (questId: string, currentStatus: boolean) => {
     try {
       impact('light');
       await toggleQuest.mutateAsync({ questId, isActive: !currentStatus });
       addToast({
-        message: `${title} ${!currentStatus ? 'activated' : 'deactivated'}`,
+        message: `Quest ${!currentStatus ? 'activated' : 'deactivated'}`,
         type: 'success',
       });
     } catch (error: any) {
@@ -80,15 +80,15 @@ const Quests = () => {
     }
   };
 
-  const handleDeleteQuest = async (questId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+  const handleDeleteQuest = async (questId: string) => {
+    if (!confirm('Are you sure you want to delete this quest?')) return;
 
     try {
       impact('medium');
       await deleteQuest.mutateAsync(questId);
       notification('success');
       addToast({
-        message: `"${title}" deleted`,
+        message: 'Quest deleted',
         type: 'success',
       });
     } catch (error: any) {
@@ -100,7 +100,7 @@ const Quests = () => {
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: string): 'success' | 'primary' | 'warning' | 'danger' | 'default' => {
     switch (difficulty) {
       case 'easy':
         return 'success';
@@ -142,7 +142,7 @@ const Quests = () => {
           <button
             onClick={() => {
               setActiveTab('my-quests');
-              impact('selection');
+              impact('light');
             }}
             className={`px-4 py-3 font-medium transition-all relative ${
               activeTab === 'my-quests'
@@ -161,7 +161,7 @@ const Quests = () => {
           <button
             onClick={() => {
               setActiveTab('library');
-              impact('selection');
+              impact('light');
             }}
             className={`px-4 py-3 font-medium transition-all relative ${
               activeTab === 'library'
@@ -244,7 +244,7 @@ const Quests = () => {
             <div>
               <h2 className="text-xl font-bold text-white mb-4">
                 Inactive Quests
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="default" className="ml-2">
                   {inactiveQuests.length}
                 </Badge>
               </h2>
@@ -277,7 +277,7 @@ const Quests = () => {
                 key={category.id}
                 onClick={() => {
                   setSelectedCategory(category.id);
-                  impact('selection');
+                  impact('light');
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
                   selectedCategory === category.id
@@ -347,9 +347,9 @@ const Quests = () => {
 
 const QuestCard: React.FC<{
   quest: any;
-  onToggle: (id: string, status: boolean, title: string) => void;
-  onDelete: (id: string, title: string) => void;
-  getDifficultyColor: (difficulty: string) => string;
+  onToggle: (id: string, isActive: boolean) => void;
+  onDelete: (id: string) => void;
+  getDifficultyColor: (difficulty: string) => 'success' | 'primary' | 'warning' | 'danger' | 'default';
   inactive?: boolean;
 }> = ({ quest, onToggle, onDelete, getDifficultyColor, inactive = false }) => {
   return (
@@ -376,7 +376,7 @@ const QuestCard: React.FC<{
                 {quest.difficulty}
               </Badge>
               {!quest.isActive && (
-                <Badge variant="secondary" size="sm">
+                <Badge variant="default" size="sm">
                   Inactive
                 </Badge>
               )}
@@ -402,14 +402,14 @@ const QuestCard: React.FC<{
             <Button
               variant={quest.isActive ? 'secondary' : 'primary'}
               size="sm"
-              onClick={() => onToggle(quest.id, quest.isActive, quest.title)}
+              onClick={() => onToggle(quest.id, quest.isActive)}
             >
               {quest.isActive ? 'Disable' : 'Enable'}
             </Button>
             <Button
               variant="danger"
               size="sm"
-              onClick={() => onDelete(quest.id, quest.title)}
+              onClick={() => onDelete(quest.id)}
             >
               Delete
             </Button>
@@ -423,8 +423,8 @@ const QuestCard: React.FC<{
 // Template Card Component for Quest Library
 const TemplateCard: React.FC<{
   template: any;
-  onAdd: (id: string, title: string) => void;
-  getDifficultyColor: (difficulty: string) => string;
+  onAdd: (templateId: string) => void;
+  getDifficultyColor: (difficulty: string) => 'success' | 'primary' | 'warning' | 'danger' | 'default';
   isAdding: boolean;
 }> = ({ template, onAdd, getDifficultyColor, isAdding }) => {
   return (
@@ -473,7 +473,7 @@ const TemplateCard: React.FC<{
           <Button
             variant="primary"
             size="md"
-            onClick={() => onAdd(template.id, template.title)}
+            onClick={() => onAdd(template.id)}
             isLoading={isAdding}
             disabled={isAdding}
           >

@@ -7,7 +7,9 @@ const rarityColors = {
   rare: 'primary',
   epic: 'warning',
   legendary: 'danger',
-};
+} as const;
+
+type RarityKey = keyof typeof rarityColors;
 
 const Achievements = () => {
   const { data: achievementsData, isLoading: achievementsLoading } = useAchievements();
@@ -33,7 +35,7 @@ const Achievements = () => {
 
   // Merge achievements with user progress
   const achievementsWithProgress = allAchievements.map((achievement: any) => {
-    const userAchievement = userAchievementMap.get(achievement.id);
+    const userAchievement: any = userAchievementMap.get(achievement.id);
     return {
       ...achievement,
       isCompleted: userAchievement?.isCompleted || false,
@@ -87,7 +89,7 @@ const Achievements = () => {
             <div key={rarity}>
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-bold text-white capitalize">{rarity} Achievements</h2>
-                <Badge variant={rarityColors[rarity as keyof typeof rarityColors]}>
+                <Badge variant={rarityColors[rarity as RarityKey]}>
                   {achievements.filter((a: any) => a.isCompleted).length}/{achievements.length}
                 </Badge>
               </div>
@@ -120,7 +122,7 @@ const Achievements = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-bold text-white">{achievement.title}</h3>
                             <Badge
-                              variant={rarityColors[rarity as keyof typeof rarityColors]}
+                              variant={rarityColors[rarity as RarityKey]}
                               size="sm"
                             >
                               {rarity}

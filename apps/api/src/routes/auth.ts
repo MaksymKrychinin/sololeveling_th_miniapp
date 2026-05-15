@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 import { authService } from '@/services/AuthService';
 
-const router = Router();
+const router: IRouter = Router();
 
 // POST /api/v1/auth/telegram - Authenticate with Telegram
 router.post('/telegram', async (req, res) => {
@@ -16,7 +16,7 @@ router.post('/telegram', async (req, res) => {
 
   const result = await authService.authenticateWithTelegram(initData);
 
-  res.json({
+  return res.json({
     success: true,
     data: result,
   });
@@ -35,7 +35,7 @@ router.post('/refresh', async (req, res) => {
 
   const result = await authService.refreshToken(token);
 
-  res.json({
+  return res.json({
     success: true,
     data: result,
   });
@@ -61,17 +61,17 @@ router.post('/dev-login', async (req, res) => {
 
   const result = await authService.authenticateWithDevCredentials(username, password);
 
-  res.json({
+  return res.json({
     success: true,
     data: result,
   });
 });
 
 // POST /api/v1/auth/logout - Logout user
-router.post('/logout', async (req, res) => {
+router.post('/logout', async (_req, res) => {
   // For JWT, logout is handled client-side by removing the token
   // Here we just return success
-  res.json({
+  return res.json({
     success: true,
     data: { message: 'Logged out successfully' },
   });

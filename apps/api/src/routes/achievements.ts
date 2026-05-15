@@ -1,17 +1,17 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
 import { achievementRepository } from '@/repositories/AchievementRepository';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All achievement routes require authentication
 router.use(authMiddleware);
 
 // GET /api/v1/achievements - Get all achievements
-router.get('/', async (req: AuthRequest, res) => {
+router.get('/', async (_req: AuthRequest, res) => {
   const achievements = await achievementRepository.findAll();
 
-  res.json({
+  return res.json({
     success: true,
     data: achievements,
   });
@@ -19,9 +19,17 @@ router.get('/', async (req: AuthRequest, res) => {
 
 // GET /api/v1/achievements/user - Get user achievements
 router.get('/user', async (req: AuthRequest, res) => {
-  const userAchievements = await achievementRepository.findUserAchievements(req.userId!);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const userAchievements = await achievementRepository.findUserAchievements(userId);
+
+  return res.json({
     success: true,
     data: userAchievements,
   });

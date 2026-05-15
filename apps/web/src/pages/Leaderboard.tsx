@@ -20,13 +20,6 @@ const Leaderboard = () => {
   const leaderboard = leaderboardData?.data?.leaderboard || [];
   const currentUserPosition = leaderboardData?.data?.currentUserPosition;
 
-  const getMedalEmoji = (position: number) => {
-    if (position === 1) return '🥇';
-    if (position === 2) return '🥈';
-    if (position === 3) return '🥉';
-    return null;
-  };
-
   const getDisplayValue = (item: any, type: string) => {
     switch (type) {
       case 'level':
@@ -63,7 +56,7 @@ const Leaderboard = () => {
             key={type.id}
             onClick={() => {
               setSelectedType(type.id);
-              impact('selection');
+              impact('light');
             }}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
               selectedType === type.id

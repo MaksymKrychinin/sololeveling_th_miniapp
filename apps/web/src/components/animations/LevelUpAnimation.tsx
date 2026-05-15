@@ -22,6 +22,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
       const timer = setTimeout(() => setShowContent(true), 500);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [isOpen]);
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
       const timer = setTimeout(onClose, 4000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [isOpen, onClose]);
 
   return (

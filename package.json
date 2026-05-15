@@ -5,6 +5,7 @@
   "description": "Solo Leveling inspired habit tracking Telegram Mini App",
   "scripts": {
     "dev": "turbo run dev",
+    "start:all": "./start-all.sh",
     "build": "turbo run build",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
@@ -12,6 +13,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "turbo run clean && rm -rf node_modules",
     "db:studio": "pnpm --filter database db:studio",
+    "db:generate": "pnpm --filter database db:generate",
     "db:migrate": "pnpm --filter database db:migrate",
     "db:push": "pnpm --filter database db:push",
     "db:seed": "pnpm --filter database db:seed",

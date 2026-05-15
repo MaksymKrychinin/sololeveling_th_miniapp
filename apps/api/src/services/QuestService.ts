@@ -233,7 +233,7 @@ export class QuestService {
       userId,
       templateId: template.id,
       title: template.title,
-      description: template.description,
+      description: template.description ?? undefined,
       category: template.category,
       xpReward: template.xpReward,
       statBonus: template.statBonus,

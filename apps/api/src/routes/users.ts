@@ -1,17 +1,25 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
 import { userService } from '@/services/UserService';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All user routes require authentication
 router.use(authMiddleware);
 
 // GET /api/v1/users/profile - Get user profile
 router.get('/profile', async (req: AuthRequest, res) => {
-  const profile = await userService.getProfile(req.userId!);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const profile = await userService.getProfile(userId);
+
+  return res.json({
     success: true,
     data: profile,
   });
@@ -20,13 +28,20 @@ router.get('/profile', async (req: AuthRequest, res) => {
 // PATCH /api/v1/users/profile - Update user profile
 router.patch('/profile', async (req: AuthRequest, res) => {
   const { avatar, timezone } = req.body;
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  const profile = await userService.updateProfile(req.userId!, {
+  const profile = await userService.updateProfile(userId, {
     avatar,
     timezone,
   });
 
-  res.json({
+  return res.json({
     success: true,
     data: profile,
   });
@@ -34,9 +49,17 @@ router.patch('/profile', async (req: AuthRequest, res) => {
 
 // GET /api/v1/users/stats - Get user statistics
 router.get('/stats', async (req: AuthRequest, res) => {
-  const stats = await userService.getStats(req.userId!);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const stats = await userService.getStats(userId);
+
+  return res.json({
     success: true,
     data: stats,
   });

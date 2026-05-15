@@ -1,9 +1,9 @@
 import { prisma } from '@solo-leveling/database';
-import { Quest, QuestTemplate } from '@prisma/client';
+import type { Quest, QuestTemplate, QuestCompletion, Prisma } from '@solo-leveling/database';
 
 export class QuestRepository {
-  async findUserQuests(userId: string, isActive?: boolean) {
-    const where: any = { userId };
+  async findUserQuests(userId: string, isActive?: boolean): Promise<Array<Quest & { template: QuestTemplate | null }>> {
+    const where: Prisma.QuestWhereInput = { userId };
     if (isActive !== undefined) {
       where.isActive = isActive;
     }
@@ -43,7 +43,7 @@ export class QuestRepository {
     });
   }
 
-  async update(id: string, data: Partial<Quest>): Promise<Quest> {
+  async update(id: string, data: Prisma.QuestUpdateInput): Promise<Quest> {
     return prisma.quest.update({
       where: { id },
       data,
@@ -100,7 +100,7 @@ export class QuestRepository {
     });
   }
 
-  async getTodayCompletions(userId: string, date: Date) {
+  async getTodayCompletions(userId: string, date: Date): Promise<QuestCompletion[]> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
@@ -122,7 +122,7 @@ export class QuestRepository {
     questId: string;
     xpGained: number;
     statsGained?: any;
-  }) {
+  }): Promise<QuestCompletion> {
     return prisma.questCompletion.create({
       data,
     });
