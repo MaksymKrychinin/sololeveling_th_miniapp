@@ -1,5 +1,7 @@
 # Base stage
-FROM node:20-alpine AS base
+FROM node:22.13.0-alpine AS base
+# Install OpenSSL and other dependencies required by Prisma and native modules
+RUN apk add --no-cache openssl libc6-compat
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 WORKDIR /app
 
@@ -14,6 +16,8 @@ RUN pnpm install --frozen-lockfile
 
 # Build stage
 FROM base AS build
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN pnpm --filter @solo-leveling/shared build
@@ -23,6 +27,9 @@ RUN pnpm --filter bot build
 # Production stage
 FROM node:22.13.0-alpine AS production
 WORKDIR /app
+
+# Install runtime dependencies (OpenSSL for Prisma) and build tools for native modules
+RUN apk add --no-cache openssl libc6-compat python3 make g++
 
 # Install only production dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

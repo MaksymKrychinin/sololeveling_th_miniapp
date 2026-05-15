@@ -2,6 +2,9 @@
 FROM node:22.13.0-alpine AS build
 WORKDIR /app
 
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
