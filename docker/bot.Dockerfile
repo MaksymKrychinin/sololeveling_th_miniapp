@@ -25,6 +25,7 @@ COPY . .
 # Build (only runs when source changes)
 RUN pnpm --filter @solo-leveling/shared build && \
     pnpm --filter @solo-leveling/database db:generate && \
+    pnpm --filter @solo-leveling/database build && \
     pnpm --filter bot build
 
 # Remove dev dependencies to reduce image size
