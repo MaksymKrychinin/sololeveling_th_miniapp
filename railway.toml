@@ -1,6 +1,5 @@
 # Railway configuration for API service
 [build]
-builder = "NIXPACKS"
 buildCommand = "pnpm install && pnpm db:generate && pnpm build --filter=api"
 
 [deploy]
