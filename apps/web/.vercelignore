@@ -1,0 +1,6 @@
+# Vercel should only deploy pre-built files from dist/
+# Ignore everything except dist directory
+
+*
+!dist
+!dist/**

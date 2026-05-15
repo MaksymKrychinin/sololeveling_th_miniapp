@@ -26,7 +26,7 @@
     "deploy:vercel": "./scripts/deploy-vercel.sh",
     "deploy:setup-db": "./scripts/setup-database.sh",
     "deploy:setup-telegram": "./scripts/setup-telegram.sh",
-    "prepare": "husky install"
+    "prepare": "[ -d node_modules/husky ] && husky install || true"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
