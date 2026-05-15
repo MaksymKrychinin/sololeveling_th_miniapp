@@ -1,15 +1,49 @@
-import { questRepository } from '../repositories/QuestRepository';
-import { userRepository } from '../repositories/UserRepository';
-import { achievementRepository } from '../repositories/AchievementRepository';
+import { questRepository } from '@/repositories/QuestRepository';
+import { userRepository } from '@/repositories/UserRepository';
 import { userService } from './UserService';
-import { AppError } from '../middleware/errorHandler';
+import { achievementService } from './achievementService';
+import { AppError } from '@/middleware/errorHandler';
 import { isToday, isYesterday, isWithinStreakGracePeriod } from '@solo-leveling/shared';
+import type { Prisma } from '@solo-leveling/database';
+
+// Define explicit return types to avoid Prisma type inference issues
+type QuestResponse = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  xpReward: number;
+  statBonus: Prisma.JsonValue;
+  frequency: string;
+  status: string;
+  completedAt: Date | null;
+  streak: number;
+  icon: string;
+  difficulty: string;
+  isActive: boolean;
+  template: any;
+};
+
+type QuestCompleteResponse = {
+  quest: any;
+  xpGained: number;
+  levelUp?: {
+    newLevel: number;
+    newTitle: string;
+  };
+  statBonus: Prisma.JsonValue;
+  achievementsUnlocked?: any[];
+};
+
+type DeleteQuestResponse = {
+  message: string;
+};
 
 export class QuestService {
   /**
    * Get user's quests
    */
-  async getUserQuests(userId: string, isActive?: boolean) {
+  async getUserQuests(userId: string, isActive?: boolean): Promise<QuestResponse[]> {
     const quests = await questRepository.findUserQuests(userId, isActive);
 
     return quests.map((quest) => ({
@@ -46,21 +80,19 @@ export class QuestService {
       difficulty: string;
       templateId?: string;
     }
-  ) {
-    const quest = await questRepository.create({
+  ): Promise<any> {
+    return await questRepository.create({
       userId,
       ...data,
     });
-
-    return quest;
   }
 
   /**
    * Update quest
    */
-  async updateQuest(questId: string, userId: string, data: any) {
+  async updateQuest(questId: string, userId: string, data: any): Promise<any> {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -69,16 +101,15 @@ export class QuestService {
       throw new AppError(403, 'Not authorized to update this quest');
     }
 
-    const updated = await questRepository.update(questId, data);
-    return updated;
+    return await questRepository.update(questId, data);
   }
 
   /**
    * Delete quest
    */
-  async deleteQuest(questId: string, userId: string) {
+  async deleteQuest(questId: string, userId: string): Promise<DeleteQuestResponse> {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -94,9 +125,9 @@ export class QuestService {
   /**
    * Complete quest
    */
-  async completeQuest(questId: string, userId: string) {
+  async completeQuest(questId: string, userId: string): Promise<QuestCompleteResponse> {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -162,48 +193,64 @@ export class QuestService {
       totalTasksCompleted: { increment: 1 },
     });
 
-    // Check quest completion achievements
+    // Check achievements after quest completion
+    const achievementsUnlocked: any[] = [];
+    
+    // Check quest-related achievements (total quests)
+    const questAchievements = await achievementService.checkAchievementsByType(userId, 'total_quests');
+    achievementsUnlocked.push(...questAchievements);
+    
+    // Check level achievements (in case XP gain caused level up)
+    const levelAchievements = await achievementService.checkAchievementsByType(userId, 'level');
+    achievementsUnlocked.push(...levelAchievements);
+    
+    // Check stat achievements (if quest gave stat bonus)
+    if (quest.statBonus) {
+      const statAchievements = await achievementService.checkAchievementsByType(userId, 'stat');
+      achievementsUnlocked.push(...statAchievements);
+    }
+    
+    // Check streak achievements (if streak was updated)
     const updatedUser = await userRepository.findById(userId);
-    if (updatedUser) {
-      await achievementRepository.checkAndUnlock(userId, 'quests_50', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_200', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_500', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_1000', updatedUser.totalTasksCompleted);
+    if (updatedUser && updatedUser.streak > (user?.streak ?? 0)) {
+      const streakAchievements = await achievementService.checkAchievementsByType(userId, 'streak');
+      achievementsUnlocked.push(...streakAchievements);
     }
 
     return {
       quest: completedQuest,
       xpGained: quest.xpReward,
-      levelUp: xpResult.leveledUp ? {
+      levelUp: xpResult.leveledUp && xpResult.newTitle ? {
         newLevel: xpResult.newLevel,
         newTitle: xpResult.newTitle,
       } : undefined,
       statBonus: quest.statBonus,
+      achievementsUnlocked: achievementsUnlocked.length > 0 ? achievementsUnlocked : undefined,
     };
   }
 
   /**
    * Get quest templates
    */
-  async getTemplates() {
+  async getTemplates(): Promise<any[]> {
     return questRepository.getAllTemplates();
   }
 
   /**
    * Create quest from template
    */
-  async createFromTemplate(userId: string, templateId: string) {
+  async createFromTemplate(userId: string, templateId: string): Promise<any> {
     const template = await questRepository.getTemplateById(templateId);
-    
+
     if (!template) {
       throw new AppError(404, 'Template not found');
     }
 
-    const quest = await questRepository.create({
+    return await questRepository.create({
       userId,
       templateId: template.id,
       title: template.title,
-      description: template.description,
+      description: template.description ?? undefined,
       category: template.category,
       xpReward: template.xpReward,
       statBonus: template.statBonus,
@@ -211,16 +258,14 @@ export class QuestService {
       icon: template.icon,
       difficulty: template.difficulty,
     });
-
-    return quest;
   }
 
   /**
    * Toggle quest activation
    */
-  async toggleQuest(questId: string, userId: string, isActive: boolean) {
+  async toggleQuest(questId: string, userId: string, isActive: boolean): Promise<any> {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -229,8 +274,7 @@ export class QuestService {
       throw new AppError(403, 'Not authorized to toggle this quest');
     }
 
-    const updated = await questRepository.toggleActive(questId, isActive);
-    return updated;
+    return await questRepository.toggleActive(questId, isActive);
   }
 }
 

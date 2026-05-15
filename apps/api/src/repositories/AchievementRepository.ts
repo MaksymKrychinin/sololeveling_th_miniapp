@@ -1,5 +1,7 @@
 import { prisma } from '@solo-leveling/database';
-import { Achievement } from '@prisma/client';
+import type { Achievement, UserAchievement } from '@solo-leveling/database';
+
+type UserAchievementWithAchievement = UserAchievement & { achievement: Achievement };
 
 export class AchievementRepository {
   async findAll(): Promise<Achievement[]> {
@@ -14,7 +16,7 @@ export class AchievementRepository {
     });
   }
 
-  async findUserAchievements(userId: string) {
+  async findUserAchievements(userId: string): Promise<UserAchievementWithAchievement[]> {
     return prisma.userAchievement.findMany({
       where: { userId },
       include: {
@@ -24,7 +26,7 @@ export class AchievementRepository {
     });
   }
 
-  async getUserAchievement(userId: string, achievementId: string) {
+  async getUserAchievement(userId: string, achievementId: string): Promise<UserAchievementWithAchievement | null> {
     return prisma.userAchievement.findUnique({
       where: {
         userId_achievementId: {
@@ -43,7 +45,7 @@ export class AchievementRepository {
     achievementId: string;
     progress: number;
     isCompleted: boolean;
-  }) {
+  }): Promise<UserAchievementWithAchievement> {
     return prisma.userAchievement.create({
       data,
       include: {
@@ -52,7 +54,7 @@ export class AchievementRepository {
     });
   }
 
-  async updateUserAchievement(userId: string, achievementId: string, progress: number, isCompleted: boolean) {
+  async updateUserAchievement(userId: string, achievementId: string, progress: number, isCompleted: boolean): Promise<UserAchievementWithAchievement> {
     return prisma.userAchievement.update({
       where: {
         userId_achievementId: {
@@ -71,7 +73,7 @@ export class AchievementRepository {
     });
   }
 
-  async checkAndUnlock(userId: string, achievementId: string, currentValue: number) {
+  async checkAndUnlock(userId: string, achievementId: string, currentValue: number): Promise<UserAchievementWithAchievement | null> {
     const achievement = await this.findById(achievementId);
     if (!achievement) return null;
 

@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
-import { userRepository } from '../repositories/UserRepository';
+import { Router, type IRouter } from 'express';
+import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
+import { userRepository } from '@/repositories/UserRepository';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All leaderboard routes require authentication
 router.use(authMiddleware);
@@ -23,10 +23,12 @@ router.get('/', async (req: AuthRequest, res) => {
   }));
 
   // Find current user's position
-  const currentUserId = req.userId!;
-  const currentUserPosition = serializedLeaderboard.findIndex((u) => u.id === currentUserId);
+  const currentUserId = req.userId;
+  const currentUserPosition = currentUserId
+    ? serializedLeaderboard.findIndex((u) => u.id === currentUserId)
+    : -1;
 
-  res.json({
+  return res.json({
     success: true,
     data: {
       type: leaderboardType,

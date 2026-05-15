@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "cd ../.. && pnpm install && pnpm db:generate && pnpm build --filter=web",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
+  "framework": "vite",
+  "env": {
+    "VITE_API_URL": "@api_url",
+    "VITE_TELEGRAM_BOT_USERNAME": "@telegram_bot_username"
+  },
+  "build": {
+    "env": {
+      "NODE_VERSION": "22.13.0"
+    }
+  }
+}

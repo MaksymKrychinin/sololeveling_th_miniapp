@@ -1,10 +1,43 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { userRepository } from '../repositories/UserRepository';
-import { AppError } from '../middleware/errorHandler';
+import { userRepository } from '@/repositories/UserRepository';
+import { AppError } from '@/middleware/errorHandler';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+// Define explicit return types
+type AuthResponse = {
+  token: string;
+  user: {
+    id: string;
+    telegramId: number;
+    username: string;
+    firstName: string | null;
+    lastName: string | null;
+    level: number;
+    currentXP: number;
+    title: string;
+    avatar: string | null;
+    stats: {
+      strength: number;
+      agility: number;
+      intelligence: number;
+      vitality: number;
+      sense: number;
+    };
+    streak: number;
+    totalTasksCompleted: number;
+  };
+};
+
+type TokenPayload = {
+  userId: string;
+};
+
+type TokenRefreshResponse = {
+  token: string;
+};
 
 export class AuthService {
   /**
@@ -58,7 +91,7 @@ export class AuthService {
   /**
    * Authenticate user with Telegram
    */
-  async authenticateWithTelegram(initData: string) {
+  async authenticateWithTelegram(initData: string): Promise<AuthResponse> {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
     if (!botToken) {
@@ -118,7 +151,7 @@ export class AuthService {
   /**
    * Authenticate with dev credentials (development only)
    */
-  async authenticateWithDevCredentials(username: string, password: string) {
+  async authenticateWithDevCredentials(username: string, password: string): Promise<AuthResponse> {
     // Simple dev credentials check
     const validCredentials = {
       'dev': 'dev123',
@@ -178,15 +211,15 @@ export class AuthService {
    * Generate JWT token
    */
   generateToken(userId: string): string {
-    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
   }
 
   /**
    * Verify JWT token
    */
-  verifyToken(token: string): { userId: string } {
+  verifyToken(token: string): TokenPayload {
     try {
-      return jwt.verify(token, JWT_SECRET) as { userId: string };
+      return jwt.verify(token, JWT_SECRET) as TokenPayload;
     } catch (error) {
       throw new AppError(401, 'Invalid or expired token');
     }
@@ -195,7 +228,7 @@ export class AuthService {
   /**
    * Refresh token
    */
-  async refreshToken(oldToken: string) {
+  async refreshToken(oldToken: string): Promise<TokenRefreshResponse> {
     const { userId } = this.verifyToken(oldToken);
     const user = await userRepository.findById(userId);
 

@@ -1,5 +1,5 @@
 import { prisma } from '@solo-leveling/database';
-import { User } from '@prisma/client';
+import type { User, Prisma } from '@solo-leveling/database';
 
 export class UserRepository {
   async findByTelegramId(telegramId: number): Promise<User | null> {
@@ -37,7 +37,7 @@ export class UserRepository {
     });
   }
 
-  async update(id: string, data: Partial<User>): Promise<User> {
+  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
     return prisma.user.update({
       where: { id },
       data,
@@ -87,8 +87,17 @@ export class UserRepository {
     });
   }
 
-  async getLeaderboard(limit: number = 50, type: 'level' | 'xp' | 'streak' = 'level') {
-    const orderBy: any = {};
+  async getLeaderboard(limit: number = 50, type: 'level' | 'xp' | 'streak' = 'level'): Promise<Array<{
+    id: string;
+    username: string;
+    avatar: string | null;
+    level: number;
+    title: string;
+    totalXP: bigint;
+    streak: number;
+    totalTasksCompleted: number;
+  }>> {
+    const orderBy: Prisma.UserOrderByWithRelationInput = {};
     if (type === 'level') {
       orderBy.level = 'desc';
     } else if (type === 'xp') {

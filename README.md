@@ -93,10 +93,37 @@ pnpm db:seed
 ```
 
 5. **Start development servers**
+
+**Option A: Using the convenience script (Recommended)**
+```bash
+# Start all services with a single command
+./start-all.sh
+# or
+pnpm start:all
+```
+
+**Option B: Using Turborepo**
 ```bash
 # Start all apps in parallel
 pnpm dev
 ```
+
+**Option C: Start individually**
+```bash
+# Terminal 1 - API
+cd apps/api && pnpm dev
+
+# Terminal 2 - Bot
+cd apps/bot && pnpm dev
+
+# Terminal 3 - Web
+cd apps/web && pnpm dev
+```
+
+The app will be available at:
+- 🌐 **Web App**: http://localhost:3000
+- 🔌 **API**: http://localhost:3001
+- 🤖 **Bot**: Running in background
 
 The apps will be available at:
 - Web App: http://localhost:3000

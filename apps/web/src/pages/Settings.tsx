@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, Button, Badge, Spinner, useToast } from '@solo-leveling/ui';
-import { useUserStore } from '../store/userStore';
-import { useProfile, useUpdateProfile, useLogout } from '../hooks/useApi';
+import { useUserStore } from '@/store/userStore';
+import { useProfile, useUpdateProfile, useLogout } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion } from 'framer-motion';
@@ -125,7 +125,7 @@ const Settings = () => {
       >
         <Card padding="lg">
           <h2 className="text-xl font-bold text-white mb-4">Preferences</h2>
-          
+
           <div className="space-y-6">
             {/* Timezone */}
             <div>
@@ -173,7 +173,7 @@ const Settings = () => {
                   <p className="font-medium text-white">Telegram Notifications</p>
                   <p className="text-sm text-gray-400">Receive reminders via Telegram Bot</p>
                 </div>
-                <Badge variant="secondary">Coming Soon</Badge>
+                <Badge variant="default">Coming Soon</Badge>
               </div>
             </div>
 
@@ -184,7 +184,7 @@ const Settings = () => {
                   <p className="font-medium text-white">Export Data</p>
                   <p className="text-sm text-gray-400">Download your progress and quests</p>
                 </div>
-                <Badge variant="secondary">Coming Soon</Badge>
+                <Badge variant="default">Coming Soon</Badge>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ const Settings = () => {
                 <p className="font-medium text-white">Delete Account</p>
                 <p className="text-sm text-gray-400">Permanently delete your account and data</p>
               </div>
-              <Badge variant="secondary">Coming Soon</Badge>
+              <Badge variant="default">Coming Soon</Badge>
             </div>
           </div>
         </Card>

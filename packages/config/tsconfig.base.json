@@ -21,7 +21,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "incremental": true,
+    "incremental": false,
     "composite": false
   },
   "exclude": ["node_modules", "dist", "build", ".turbo"]

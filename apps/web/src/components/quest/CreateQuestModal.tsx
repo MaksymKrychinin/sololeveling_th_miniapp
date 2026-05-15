@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Modal, Button, Input, Badge, useToast } from '@solo-leveling/ui';
-import { useCreateQuest } from '../../hooks/useApi';
+import { Modal, Button, Input, useToast } from '@solo-leveling/ui';
+import { useCreateQuest } from '@/hooks/useApi';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 
 interface CreateQuestModalProps {
@@ -88,7 +88,7 @@ export const CreateQuestModal: React.FC<CreateQuestModalProps> = ({ isOpen, onCl
     e.preventDefault();
 
     if (!validateForm()) {
-      impact('warning');
+      impact('medium');
       addToast({
         message: 'Please fix the errors in the form',
         type: 'warning',

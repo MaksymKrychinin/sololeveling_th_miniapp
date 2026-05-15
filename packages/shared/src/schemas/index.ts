@@ -143,7 +143,7 @@ export const leaderboardQuerySchema = z.object({
 // Validation Helpers
 // ===========================
 
-export type UserProfile = z.infer<typeof userProfileSchema>;
+// Note: UserProfile type is defined in types/index.ts, not duplicated here
 export type CreateQuestInput = z.infer<typeof createQuestSchema>;
 export type UpdateQuestInput = z.infer<typeof updateQuestSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

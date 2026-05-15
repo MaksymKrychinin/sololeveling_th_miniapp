@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useQuests, useCompleteQuest } from '../hooks/useApi';
-import { useUserStore } from '../store/userStore';
+import { useQuests, useCompleteQuest } from '@/hooks/useApi';
+import { useUserStore } from '@/store/userStore';
 import { Card, Button, ProgressBar, Badge, Spinner, useToast } from '@solo-leveling/ui';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LevelUpAnimation } from '../components/animations/LevelUpAnimation';
+import { LevelUpAnimation } from '@/components/animations';
 
 const Home = () => {
   const { user } = useUserStore();
@@ -28,7 +28,7 @@ const Home = () => {
       impact('medium');
       const response = await completeQuest.mutateAsync(questId);
       notification('success');
-      
+
       // Check if user leveled up
       if (response?.data?.levelUp) {
         setLevelUpData({
@@ -39,7 +39,7 @@ const Home = () => {
         // Vibrate for level up
         impact('heavy');
       }
-      
+
       addToast({
         message: `${questTitle} completed! +${response?.data?.xpGained || 0} XP gained`,
         type: 'success',
@@ -204,7 +204,7 @@ const Home = () => {
           </div>
         </Card>
       )}
-      
+
       {/* Level Up Animation */}
       <LevelUpAnimation
         isOpen={levelUpData.show}

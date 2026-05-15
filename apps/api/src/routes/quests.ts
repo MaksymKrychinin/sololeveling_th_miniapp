@@ -1,17 +1,17 @@
-import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
-import { questService } from '../services/QuestService';
+import { Router, type IRouter } from 'express';
+import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
+import { questService } from '@/services/QuestService';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All quest routes require authentication
 router.use(authMiddleware);
 
 // GET /api/v1/quests/templates - Get quest templates (must be before /:id)
-router.get('/templates', async (req: AuthRequest, res) => {
+router.get('/templates', async (_req: AuthRequest, res) => {
   const templates = await questService.getTemplates();
 
-  res.json({
+  return res.json({
     success: true,
     data: templates,
   });
@@ -28,9 +28,17 @@ router.post('/from-template', async (req: AuthRequest, res) => {
     });
   }
 
-  const quest = await questService.createFromTemplate(req.userId!, templateId);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.status(201).json({
+  const quest = await questService.createFromTemplate(userId, templateId);
+
+  return res.status(201).json({
     success: true,
     data: quest,
   });
@@ -62,9 +70,25 @@ router.post('/', async (req: AuthRequest, res) => {
 
 // PATCH /api/v1/quests/:id - Update quest
 router.patch('/:id', async (req: AuthRequest, res) => {
-  const quest = await questService.updateQuest(req.params.id, req.userId!, req.body);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const questId = req.params.id;
+  if (!questId) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Quest ID is required' },
+    });
+  }
+
+  const quest = await questService.updateQuest(questId, userId, req.body);
+
+  return res.json({
     success: true,
     data: quest,
   });
@@ -73,10 +97,25 @@ router.patch('/:id', async (req: AuthRequest, res) => {
 // PATCH /api/v1/quests/:id/toggle - Toggle quest activation
 router.patch('/:id/toggle', async (req: AuthRequest, res) => {
   const { isActive } = req.body;
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  const quest = await questService.toggleQuest(req.params.id, req.userId!, isActive);
+  const questId = req.params.id;
+  if (!questId) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Quest ID is required' },
+    });
+  }
 
-  res.json({
+  const quest = await questService.toggleQuest(questId, userId, isActive);
+
+  return res.json({
     success: true,
     data: quest,
   });
@@ -84,9 +123,25 @@ router.patch('/:id/toggle', async (req: AuthRequest, res) => {
 
 // POST /api/v1/quests/:id/complete - Complete quest
 router.post('/:id/complete', async (req: AuthRequest, res) => {
-  const result = await questService.completeQuest(req.params.id, req.userId!);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const questId = req.params.id;
+  if (!questId) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Quest ID is required' },
+    });
+  }
+
+  const result = await questService.completeQuest(questId, userId);
+
+  return res.json({
     success: true,
     data: result,
   });
@@ -94,9 +149,25 @@ router.post('/:id/complete', async (req: AuthRequest, res) => {
 
 // DELETE /api/v1/quests/:id - Delete quest
 router.delete('/:id', async (req: AuthRequest, res) => {
-  const result = await questService.deleteQuest(req.params.id, req.userId!);
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
 
-  res.json({
+  const questId = req.params.id;
+  if (!questId) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Quest ID is required' },
+    });
+  }
+
+  const result = await questService.deleteQuest(questId, userId);
+
+  return res.json({
     success: true,
     data: result,
   });

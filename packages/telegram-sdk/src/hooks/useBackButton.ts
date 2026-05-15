@@ -1,22 +1,5 @@
 import { useEffect, useCallback } from 'react';
-
-interface BackButton {
-  isVisible: boolean;
-  onClick: (callback: () => void) => void;
-  offClick: (callback: () => void) => void;
-  show: () => void;
-  hide: () => void;
-}
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        BackButton: BackButton;
-      };
-    };
-  }
-}
+import '../types/telegram'; // Import for global type declaration
 
 export const useBackButton = (onClick?: () => void) => {
   const backButton = typeof window !== 'undefined' ? window.Telegram?.WebApp?.BackButton : null;
