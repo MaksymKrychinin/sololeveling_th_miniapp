@@ -1,6 +1,7 @@
 # Railway configuration for API service
 [build]
-buildCommand = "pnpm install && pnpm db:generate && pnpm build --filter=api"
+builder = "DOCKERFILE"
+dockerfilePath = "docker/api.Dockerfile"
 
 [deploy]
 startCommand = "cd apps/api && node dist/index.js"

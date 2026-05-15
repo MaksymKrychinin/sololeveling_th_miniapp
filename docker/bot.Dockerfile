@@ -21,7 +21,7 @@ RUN pnpm --filter @solo-leveling/database db:generate
 RUN pnpm --filter bot build
 
 # Production stage
-FROM node:20-alpine AS production
+FROM node:22.13.0-alpine AS production
 WORKDIR /app
 
 # Install only production dependencies
