@@ -4,11 +4,75 @@ import { achievementRepository } from '@/repositories/AchievementRepository';
 import { calculateXPForLevel, getRankTitle } from '@solo-leveling/shared';
 import { AppError } from '@/middleware/errorHandler';
 
+// Define explicit return types
+type UserProfileResponse = {
+  id: string;
+  telegramId: number;
+  username: string;
+  firstName: string | null;
+  lastName: string | null;
+  level: number;
+  currentXP: number;
+  xpToNextLevel: number;
+  title: string;
+  avatar: string | null;
+  stats: {
+    strength: number;
+    agility: number;
+    intelligence: number;
+    vitality: number;
+    sense: number;
+  };
+  streak: number;
+  longestStreak: number;
+  totalTasksCompleted: number;
+  totalXP: number;
+  joinedAt: Date;
+};
+
+type XPResult = {
+  leveledUp: boolean;
+  newLevel: number;
+  xpGained: number;
+  currentXP: number;
+  xpToNextLevel: number;
+  newTitle?: string;
+};
+
+type StatsResponse = {
+  level: number;
+  title: string;
+  totalXP: number;
+  currentXP: number;
+  xpToNextLevel: number;
+  streak: number;
+  longestStreak: number;
+  totalTasksCompleted: number;
+  stats: {
+    strength: number;
+    agility: number;
+    intelligence: number;
+    vitality: number;
+    sense: number;
+  };
+  quests: {
+    total: number;
+    active: number;
+    completed: number;
+  };
+  categoryStats: Record<string, { total: number; completed: number }>;
+};
+
+type StreakUpdateResponse = {
+  streak: number;
+  longestStreak: number;
+};
+
 export class UserService {
   /**
    * Get user profile
    */
-  async getProfile(userId: string) {
+  async getProfile(userId: string): Promise<UserProfileResponse> {
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');
@@ -43,7 +107,7 @@ export class UserService {
   /**
    * Update user profile
    */
-  async updateProfile(userId: string, data: { avatar?: string; timezone?: string }) {
+  async updateProfile(userId: string, data: { avatar?: string; timezone?: string }): Promise<UserProfileResponse> {
     const user = await userRepository.update(userId, data);
     return this.getProfile(user.id);
   }
@@ -51,7 +115,7 @@ export class UserService {
   /**
    * Add XP to user and check for level up
    */
-  async addXP(userId: string, xpGained: number) {
+  async addXP(userId: string, xpGained: number): Promise<XPResult> {
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');
@@ -59,7 +123,6 @@ export class UserService {
 
     // Calculate new XP
     const newCurrentXP = user.currentXP + xpGained;
-    const xpNeededForNextLevel = calculateXPForLevel(user.level + 1);
 
     let leveledUp = false;
     let newLevel = user.level;
@@ -73,7 +136,7 @@ export class UserService {
     }
 
     // Update user
-    const updatedUser = await userRepository.update(userId, {
+    await userRepository.update(userId, {
       level: newLevel,
       currentXP: remainingXP,
       totalXP: BigInt(user.totalXP) + BigInt(xpGained),
@@ -109,7 +172,7 @@ export class UserService {
       vitality?: number;
       sense?: number;
     }
-  ) {
+  ): Promise<UserProfileResponse> {
     await userRepository.updateStats(userId, stats);
     return this.getProfile(userId);
   }
@@ -117,7 +180,7 @@ export class UserService {
   /**
    * Get user statistics
    */
-  async getStats(userId: string) {
+  async getStats(userId: string): Promise<StatsResponse> {
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');
@@ -167,7 +230,7 @@ export class UserService {
   /**
    * Update streak
    */
-  async updateStreak(userId: string, increment: boolean = true) {
+  async updateStreak(userId: string, increment: boolean = true): Promise<StreakUpdateResponse> {
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');

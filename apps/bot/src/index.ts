@@ -1,15 +1,21 @@
 import 'dotenv/config';
-import { Bot, Context, session } from 'grammy';
+import { Bot, Context, session, SessionFlavor } from 'grammy';
 import cron from 'node-cron';
 import { logger } from './utils/logger';
 
-const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN || '');
+// Define session data structure
+interface SessionData {}
+
+// Define custom context type with session
+type MyContext = Context & SessionFlavor<SessionData>;
+
+const bot = new Bot<MyContext>(process.env.TELEGRAM_BOT_TOKEN || '');
 
 // Session middleware
-bot.use(session({ initial: () => ({}) }));
+bot.use(session({ initial: (): SessionData => ({}) }));
 
 // Commands
-bot.command('start', async (ctx: Context) => {
+bot.command('start', async (ctx) => {
   await ctx.reply(
     '🎮 Welcome to Solo Leveling!\n\n' +
     'Transform your daily habits into an epic RPG adventure!\n\n' +
@@ -29,7 +35,7 @@ bot.command('start', async (ctx: Context) => {
   );
 });
 
-bot.command('help', async (ctx: Context) => {
+bot.command('help', async (ctx) => {
   await ctx.reply(
     '📚 Solo Leveling Bot Help\n\n' +
     'Available Commands:\n' +
@@ -41,12 +47,12 @@ bot.command('help', async (ctx: Context) => {
   );
 });
 
-bot.command('stats', async (ctx: Context) => {
+bot.command('stats', async (ctx) => {
   // TODO: Fetch user stats from database
   await ctx.reply('⚡ Your Stats:\n\nLevel: 1\nXP: 0/100\nRank: E-Rank Hunter\n\n(Coming soon!)');
 });
 
-bot.command('quests', async (ctx: Context) => {
+bot.command('quests', async (ctx) => {
   // TODO: Fetch user quests from database
   await ctx.reply('⚔️ Today\'s Quests:\n\n(Coming soon!)');
 });

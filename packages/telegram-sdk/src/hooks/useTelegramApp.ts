@@ -1,26 +1,5 @@
 import { useEffect, useState } from 'react';
-
-interface TelegramWebApp {
-  ready: () => void;
-  expand: () => void;
-  close: () => void;
-  isExpanded: boolean;
-  viewportHeight: number;
-  viewportStableHeight: number;
-  headerColor: string;
-  backgroundColor: string;
-  isClosingConfirmationEnabled: boolean;
-  enableClosingConfirmation: () => void;
-  disableClosingConfirmation: () => void;
-}
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: TelegramWebApp;
-    };
-  }
-}
+import type { TelegramWebApp } from '../types';
 
 export const useTelegramApp = () => {
   const [isReady, setIsReady] = useState(false);

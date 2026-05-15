@@ -4,12 +4,45 @@ import { achievementRepository } from '@/repositories/AchievementRepository';
 import { userService } from './UserService';
 import { AppError } from '@/middleware/errorHandler';
 import { isToday, isYesterday, isWithinStreakGracePeriod } from '@solo-leveling/shared';
+import type { Prisma } from '@solo-leveling/database';
+
+// Define explicit return types to avoid Prisma type inference issues
+type QuestResponse = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  xpReward: number;
+  statBonus: Prisma.JsonValue;
+  frequency: string;
+  status: string;
+  completedAt: Date | null;
+  streak: number;
+  icon: string;
+  difficulty: string;
+  isActive: boolean;
+  template: any;
+};
+
+type QuestCompleteResponse = {
+  quest: any;
+  xpGained: number;
+  levelUp?: {
+    newLevel: number;
+    newTitle: string;
+  };
+  statBonus: Prisma.JsonValue;
+};
+
+type DeleteQuestResponse = {
+  message: string;
+};
 
 export class QuestService {
   /**
    * Get user's quests
    */
-  async getUserQuests(userId: string, isActive?: boolean) {
+  async getUserQuests(userId: string, isActive?: boolean): Promise<QuestResponse[]> {
     const quests = await questRepository.findUserQuests(userId, isActive);
 
     return quests.map((quest) => ({
@@ -46,19 +79,17 @@ export class QuestService {
       difficulty: string;
       templateId?: string;
     }
-  ) {
-    const quest = await questRepository.create({
+  ): Promise<any> {
+    return await questRepository.create({
       userId,
       ...data,
     });
-
-    return quest;
   }
 
   /**
    * Update quest
    */
-  async updateQuest(questId: string, userId: string, data: any) {
+  async updateQuest(questId: string, userId: string, data: any): Promise<any> {
     const quest = await questRepository.findById(questId);
 
     if (!quest) {
@@ -69,14 +100,13 @@ export class QuestService {
       throw new AppError(403, 'Not authorized to update this quest');
     }
 
-    const updated = await questRepository.update(questId, data);
-    return updated;
+    return await questRepository.update(questId, data);
   }
 
   /**
    * Delete quest
    */
-  async deleteQuest(questId: string, userId: string) {
+  async deleteQuest(questId: string, userId: string): Promise<DeleteQuestResponse> {
     const quest = await questRepository.findById(questId);
 
     if (!quest) {
@@ -94,7 +124,7 @@ export class QuestService {
   /**
    * Complete quest
    */
-  async completeQuest(questId: string, userId: string) {
+  async completeQuest(questId: string, userId: string): Promise<QuestCompleteResponse> {
     const quest = await questRepository.findById(questId);
 
     if (!quest) {
@@ -174,7 +204,7 @@ export class QuestService {
     return {
       quest: completedQuest,
       xpGained: quest.xpReward,
-      levelUp: xpResult.leveledUp ? {
+      levelUp: xpResult.leveledUp && xpResult.newTitle ? {
         newLevel: xpResult.newLevel,
         newTitle: xpResult.newTitle,
       } : undefined,
@@ -185,21 +215,21 @@ export class QuestService {
   /**
    * Get quest templates
    */
-  async getTemplates() {
+  async getTemplates(): Promise<any[]> {
     return questRepository.getAllTemplates();
   }
 
   /**
    * Create quest from template
    */
-  async createFromTemplate(userId: string, templateId: string) {
+  async createFromTemplate(userId: string, templateId: string): Promise<any> {
     const template = await questRepository.getTemplateById(templateId);
 
     if (!template) {
       throw new AppError(404, 'Template not found');
     }
 
-    const quest = await questRepository.create({
+    return await questRepository.create({
       userId,
       templateId: template.id,
       title: template.title,
@@ -211,14 +241,12 @@ export class QuestService {
       icon: template.icon,
       difficulty: template.difficulty,
     });
-
-    return quest;
   }
 
   /**
    * Toggle quest activation
    */
-  async toggleQuest(questId: string, userId: string, isActive: boolean) {
+  async toggleQuest(questId: string, userId: string, isActive: boolean): Promise<any> {
     const quest = await questRepository.findById(questId);
 
     if (!quest) {
@@ -229,8 +257,7 @@ export class QuestService {
       throw new AppError(403, 'Not authorized to toggle this quest');
     }
 
-    const updated = await questRepository.toggleActive(questId, isActive);
-    return updated;
+    return await questRepository.toggleActive(questId, isActive);
   }
 }
 

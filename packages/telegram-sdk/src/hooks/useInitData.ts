@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import '../types/telegram'; // Import for global type declaration
 
 interface InitDataUser {
   id: number;
@@ -15,17 +16,6 @@ interface InitData {
   user?: InitDataUser;
   auth_date?: number;
   hash?: string;
-}
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        initData: string;
-        initDataUnsafe: InitData;
-      };
-    };
-  }
 }
 
 export const useInitData = () => {

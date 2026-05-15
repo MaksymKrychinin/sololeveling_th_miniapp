@@ -2,14 +2,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps {
+  children?: React.ReactNode;
   variant?: 'default' | 'glass' | 'glow';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hoverable?: boolean;
+  className?: string;
+  onClick?: () => void;
+  id?: string;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ children, variant = 'default', padding = 'md', hoverable = false, className, ...props }, ref) => {
+  ({ children, variant = 'default', padding = 'md', hoverable = false, className, onClick, ...props }, ref) => {
     const baseClass = clsx(
       'rounded-xl overflow-hidden',
       {
@@ -31,19 +37,25 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       className
     );
 
-    const Component = hoverable ? motion.div : 'div';
-
-    const motionProps = hoverable
-      ? {
-          whileHover: { scale: 1.02, y: -2 },
-          transition: { duration: 0.2 },
-        }
-      : {};
+    if (hoverable) {
+      return (
+        <motion.div
+          ref={ref}
+          className={baseClass}
+          onClick={onClick}
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ duration: 0.2 }}
+          {...props}
+        >
+          {children}
+        </motion.div>
+      );
+    }
 
     return (
-      <Component ref={ref} className={baseClass} {...motionProps} {...props}>
+      <div ref={ref} className={baseClass} onClick={onClick} {...props}>
         {children}
-      </Component>
+      </div>
     );
   }
 );

@@ -1,24 +1,8 @@
 import { useCallback } from 'react';
+import '../types/telegram'; // Import for global type declaration
 
-type HapticFeedbackType = 'impact' | 'notification' | 'selection';
 type ImpactStyle = 'light' | 'medium' | 'heavy' | 'rigid' | 'soft';
 type NotificationType = 'error' | 'success' | 'warning';
-
-interface HapticFeedback {
-  impactOccurred: (style: ImpactStyle) => void;
-  notificationOccurred: (type: NotificationType) => void;
-  selectionChanged: () => void;
-}
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        HapticFeedback: HapticFeedback;
-      };
-    };
-  }
-}
 
 export const useHapticFeedback = () => {
   const impact = useCallback((style: ImpactStyle = 'medium') => {
