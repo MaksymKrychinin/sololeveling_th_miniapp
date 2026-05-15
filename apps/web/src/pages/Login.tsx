@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Input, useToast } from '@solo-leveling/ui';
-import { useUserStore } from '../store/userStore';
+import { useUserStore } from '@/store/userStore';
 import { motion } from 'framer-motion';
 
 const Login = () => {
@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!username || !password) {
       addToast({
         message: 'Please enter username and password',
@@ -65,7 +65,7 @@ const Login = () => {
     <div className="min-h-screen relative overflow-hidden bg-slate-950">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950" />
-      
+
       {/* Animated Glow Orbs */}
       <motion.div
         animate={{
@@ -110,8 +110,8 @@ const Login = () => {
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
-                duration: 0.8, 
+              transition={{
+                duration: 0.8,
                 delay: 0.2,
                 type: "spring",
                 stiffness: 200
@@ -130,32 +130,32 @@ const Login = () => {
                   transition={{ duration: 2, repeat: Infinity }}
                   className="rounded-full p-6 bg-gradient-to-br from-purple-600/20 to-cyan-600/20 backdrop-blur-sm border border-purple-500/30"
                 >
-                  <svg 
-                    width="64" 
-                    height="64" 
-                    viewBox="0 0 64 64" 
-                    fill="none" 
+                  <svg
+                    width="64"
+                    height="64"
+                    viewBox="0 0 64 64"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className="text-purple-400"
                   >
-                    <path 
-                      d="M32 4L36 12L32 20L28 12L32 4Z" 
+                    <path
+                      d="M32 4L36 12L32 20L28 12L32 4Z"
                       fill="currentColor"
                       className="opacity-80"
                     />
-                    <rect 
-                      x="30" 
-                      y="16" 
-                      width="4" 
-                      height="40" 
+                    <rect
+                      x="30"
+                      y="16"
+                      width="4"
+                      height="40"
                       fill="url(#swordGradient)"
                     />
-                    <path 
-                      d="M26 54H38V58H26V54Z" 
+                    <path
+                      d="M26 54H38V58H26V54Z"
                       fill="currentColor"
                     />
-                    <path 
-                      d="M24 58H40V60H24V58Z" 
+                    <path
+                      d="M24 58H40V60H24V58Z"
                       fill="currentColor"
                       className="opacity-80"
                     />
@@ -181,7 +181,7 @@ const Login = () => {
                   Solo Leveling
                 </span>
               </h1>
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}

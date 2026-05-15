@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { useUserStore } from '../store/userStore';
+import { useUserStore } from '@/store/userStore';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 

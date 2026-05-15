@@ -1,4 +1,4 @@
-import { useAchievements, useUserAchievements } from '../hooks/useApi';
+import { useAchievements, useUserAchievements } from '@/hooks/useApi';
 import { Card, Badge, ProgressBar, Spinner } from '@solo-leveling/ui';
 import { motion } from 'framer-motion';
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLeaderboard } from '../hooks/useApi';
-import { useUserStore } from '../store/userStore';
+import { useLeaderboard } from '@/hooks/useApi';
+import { useUserStore } from '@/store/userStore';
 import { Card, Badge, Spinner } from '@solo-leveling/ui';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion } from 'framer-motion';

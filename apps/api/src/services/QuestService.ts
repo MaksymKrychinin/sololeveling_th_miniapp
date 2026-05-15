@@ -1,8 +1,8 @@
-import { questRepository } from '../repositories/QuestRepository';
-import { userRepository } from '../repositories/UserRepository';
-import { achievementRepository } from '../repositories/AchievementRepository';
+import { questRepository } from '@/repositories/QuestRepository';
+import { userRepository } from '@/repositories/UserRepository';
+import { achievementRepository } from '@/repositories/AchievementRepository';
 import { userService } from './UserService';
-import { AppError } from '../middleware/errorHandler';
+import { AppError } from '@/middleware/errorHandler';
 import { isToday, isYesterday, isWithinStreakGracePeriod } from '@solo-leveling/shared';
 
 export class QuestService {
@@ -60,7 +60,7 @@ export class QuestService {
    */
   async updateQuest(questId: string, userId: string, data: any) {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -78,7 +78,7 @@ export class QuestService {
    */
   async deleteQuest(questId: string, userId: string) {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -96,7 +96,7 @@ export class QuestService {
    */
   async completeQuest(questId: string, userId: string) {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }
@@ -194,7 +194,7 @@ export class QuestService {
    */
   async createFromTemplate(userId: string, templateId: string) {
     const template = await questRepository.getTemplateById(templateId);
-    
+
     if (!template) {
       throw new AppError(404, 'Template not found');
     }
@@ -220,7 +220,7 @@ export class QuestService {
    */
   async toggleQuest(questId: string, userId: string, isActive: boolean) {
     const quest = await questRepository.findById(questId);
-    
+
     if (!quest) {
       throw new AppError(404, 'Quest not found');
     }

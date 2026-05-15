@@ -1,5 +1,5 @@
-import { useProfile, useStats, useUserAchievements } from '../hooks/useApi';
-import { useUserStore } from '../store/userStore';
+import { useProfile, useStats, useUserAchievements } from '@/hooks/useApi';
+import { useUserStore } from '@/store/userStore';
 import { Card, Badge, ProgressBar, Spinner } from '@solo-leveling/ui';
 import { motion } from 'framer-motion';
 

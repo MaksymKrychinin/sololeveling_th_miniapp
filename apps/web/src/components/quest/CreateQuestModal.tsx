@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, Button, Input, Badge, useToast } from '@solo-leveling/ui';
-import { useCreateQuest } from '../../hooks/useApi';
+import { useCreateQuest } from '@/hooks/useApi';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 
 interface CreateQuestModalProps {

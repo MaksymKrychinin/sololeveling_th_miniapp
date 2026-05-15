@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
-import { userRepository } from '../repositories/UserRepository';
+import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
+import { userRepository } from '@/repositories/UserRepository';
 
 const router = Router();
 

@@ -5,11 +5,11 @@ import {
   useCreateQuestFromTemplate,
   useToggleQuest,
   useDeleteQuest,
-} from '../hooks/useApi';
+} from '@/hooks/useApi';
 import { Card, Button, Badge, Spinner, useToast } from '@solo-leveling/ui';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreateQuestModal } from '../components/quest/CreateQuestModal';
+import { CreateQuestModal } from '@/components/quest/CreateQuestModal';
 
 const categories = [
   { id: 'all', name: 'All', icon: '✨' },

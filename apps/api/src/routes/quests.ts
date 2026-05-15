@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
-import { questService } from '../services/QuestService';
+import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
+import { questService } from '@/services/QuestService';
 
 const router = Router();
 

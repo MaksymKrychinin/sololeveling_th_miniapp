@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, Button, Badge, Spinner, useToast } from '@solo-leveling/ui';
-import { useUserStore } from '../store/userStore';
-import { useProfile, useUpdateProfile, useLogout } from '../hooks/useApi';
+import { useUserStore } from '@/store/userStore';
+import { useProfile, useUpdateProfile, useLogout } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { useHapticFeedback } from '@solo-leveling/telegram-sdk';
 import { motion } from 'framer-motion';
@@ -125,7 +125,7 @@ const Settings = () => {
       >
         <Card padding="lg">
           <h2 className="text-xl font-bold text-white mb-4">Preferences</h2>
-          
+
           <div className="space-y-6">
             {/* Timezone */}
             <div>

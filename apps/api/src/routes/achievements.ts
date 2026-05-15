@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
-import { achievementRepository } from '../repositories/AchievementRepository';
+import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
+import { achievementRepository } from '@/repositories/AchievementRepository';
 
 const router = Router();
 
