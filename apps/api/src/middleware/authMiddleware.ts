@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { authService } from '@/services/AuthService';
+import { authService } from '../services/AuthService';
 import { AppError } from './errorHandler';
 
 export interface AuthRequest extends Request {
