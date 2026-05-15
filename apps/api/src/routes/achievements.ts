@@ -1,6 +1,7 @@
 import { Router, type IRouter } from 'express';
 import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
 import { achievementRepository } from '@/repositories/AchievementRepository';
+import { achievementService } from '@/services/achievementService';
 
 const router: IRouter = Router();
 
@@ -17,7 +18,7 @@ router.get('/', async (_req: AuthRequest, res) => {
   });
 });
 
-// GET /api/v1/achievements/user - Get user achievements
+// GET /api/v1/achievements/user - Get user achievements with progress
 router.get('/user', async (req: AuthRequest, res) => {
   const userId = req.userId;
   if (!userId) {
@@ -27,11 +28,50 @@ router.get('/user', async (req: AuthRequest, res) => {
     });
   }
 
-  const userAchievements = await achievementRepository.findUserAchievements(userId);
+  const achievements = await achievementService.getUserAchievementsWithProgress(userId);
 
   return res.json({
     success: true,
-    data: userAchievements,
+    data: achievements,
+  });
+});
+
+// GET /api/v1/achievements/stats - Get achievement statistics
+router.get('/stats', async (req: AuthRequest, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
+
+  const stats = await achievementService.getAchievementStats(userId);
+
+  return res.json({
+    success: true,
+    data: stats,
+  });
+});
+
+// POST /api/v1/achievements/check - Manually check all achievements
+router.post('/check', async (req: AuthRequest, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Unauthorized' },
+    });
+  }
+
+  const newlyUnlocked = await achievementService.checkAllAchievements(userId);
+
+  return res.json({
+    success: true,
+    data: {
+      newlyUnlocked,
+      count: newlyUnlocked.length,
+    },
   });
 });
 

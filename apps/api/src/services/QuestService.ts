@@ -1,7 +1,7 @@
 import { questRepository } from '@/repositories/QuestRepository';
 import { userRepository } from '@/repositories/UserRepository';
-import { achievementRepository } from '@/repositories/AchievementRepository';
 import { userService } from './UserService';
+import { achievementService } from './achievementService';
 import { AppError } from '@/middleware/errorHandler';
 import { isToday, isYesterday, isWithinStreakGracePeriod } from '@solo-leveling/shared';
 import type { Prisma } from '@solo-leveling/database';
@@ -32,6 +32,7 @@ type QuestCompleteResponse = {
     newTitle: string;
   };
   statBonus: Prisma.JsonValue;
+  achievementsUnlocked?: any[];
 };
 
 type DeleteQuestResponse = {
@@ -192,13 +193,28 @@ export class QuestService {
       totalTasksCompleted: { increment: 1 },
     });
 
-    // Check quest completion achievements
+    // Check achievements after quest completion
+    const achievementsUnlocked: any[] = [];
+    
+    // Check quest-related achievements (total quests)
+    const questAchievements = await achievementService.checkAchievementsByType(userId, 'total_quests');
+    achievementsUnlocked.push(...questAchievements);
+    
+    // Check level achievements (in case XP gain caused level up)
+    const levelAchievements = await achievementService.checkAchievementsByType(userId, 'level');
+    achievementsUnlocked.push(...levelAchievements);
+    
+    // Check stat achievements (if quest gave stat bonus)
+    if (quest.statBonus) {
+      const statAchievements = await achievementService.checkAchievementsByType(userId, 'stat');
+      achievementsUnlocked.push(...statAchievements);
+    }
+    
+    // Check streak achievements (if streak was updated)
     const updatedUser = await userRepository.findById(userId);
-    if (updatedUser) {
-      await achievementRepository.checkAndUnlock(userId, 'quests_50', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_200', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_500', updatedUser.totalTasksCompleted);
-      await achievementRepository.checkAndUnlock(userId, 'quests_1000', updatedUser.totalTasksCompleted);
+    if (updatedUser && updatedUser.streak > (user?.streak ?? 0)) {
+      const streakAchievements = await achievementService.checkAchievementsByType(userId, 'streak');
+      achievementsUnlocked.push(...streakAchievements);
     }
 
     return {
@@ -209,6 +225,7 @@ export class QuestService {
         newTitle: xpResult.newTitle,
       } : undefined,
       statBonus: quest.statBonus,
+      achievementsUnlocked: achievementsUnlocked.length > 0 ? achievementsUnlocked : undefined,
     };
   }
 

@@ -129,6 +129,15 @@ pnpm db:studio        # Open Prisma Studio
 pnpm db:seed          # Seed database
 ```
 
+### Deployment Commands
+
+```bash
+pnpm deploy:railway          # Deploy to Railway (API + Bot)
+pnpm deploy:vercel           # Deploy to Vercel (Frontend)
+pnpm deploy:setup-db         # Setup remote database
+pnpm deploy:setup-telegram   # Configure Telegram bot
+```
+
 ### Docker Commands
 
 ```bash
@@ -266,15 +275,19 @@ pnpm test:e2e
 ## Next Steps
 
 1. ✅ **Phase 0 Complete** - Infrastructure is ready
-2. 🚧 **Phase 1** - Implement backend controllers & services
-3. 🚧 **Phase 2** - Build frontend components & pages
-4. 🚧 **Phase 3** - Add animations & polish
-5. 🚧 **Phase 4** - Testing & optimization
-6. 🚧 **Phase 5** - Deployment
+2. ✅ **Phase 1 Complete** - Backend controllers & services implemented
+3. ✅ **Phase 2 Complete** - Frontend components & pages built
+4. ✅ **Achievements System** - Full implementation with rewards & tracking
+5. ✅ **CI/CD & Deployment** - GitHub Actions + free hosting options
+6. 🚧 **Phase 3** - Add more animations & polish
+7. 🚧 **Phase 4** - Testing & optimization
+8. 🚧 **Phase 5** - Production launch
 
 ## Documentation
 
 - [Architecture](./ARCHITECTURE.md) - System design & patterns
+- [Deployment Guide](./DEPLOYMENT.md) - Free hosting options & CI/CD
+- [Achievements & Deployment Complete](./ACHIEVEMENTS_DEPLOYMENT_COMPLETE.md) - Latest implementation
 - [Implementation Plan](./IMPLEMENTATION_PLAN.md) - 8-week roadmap
 - [Progress Tracker](./PROGRESS.md) - Detailed checklist
 - [Contributing](./CONTRIBUTING.md) - How to contribute

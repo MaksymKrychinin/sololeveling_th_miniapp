@@ -257,17 +257,18 @@ export class AchievementService {
     const byRarity: Record<string, { total: number; unlocked: number }> = {};
 
     for (const achievement of allAchievements) {
-      if (!byRarity[achievement.rarity]) {
-        byRarity[achievement.rarity] = { total: 0, unlocked: 0 };
+      const rarity = achievement.rarity;
+      if (!byRarity[rarity]) {
+        byRarity[rarity] = { total: 0, unlocked: 0 };
       }
-      byRarity[achievement.rarity].total++;
+      byRarity[rarity]!.total++;
     }
 
     for (const userAchievement of userAchievements) {
       if (userAchievement.isCompleted) {
         const rarity = userAchievement.achievement.rarity;
         if (byRarity[rarity]) {
-          byRarity[rarity].unlocked++;
+          byRarity[rarity]!.unlocked++;
         }
       }
     }
