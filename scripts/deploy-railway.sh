@@ -71,20 +71,40 @@ pnpm db:generate
 pnpm build
 
 echo ""
-echo "🚀 Deploying API..."
-railway up --service api
-
+echo "🚀 Deploying via Railway CLI..."
+echo "⚠️  Note: Railway CLI deployment can be complex with monorepos."
+echo "If this fails, use GitHub integration instead (push to GitHub)."
 echo ""
-echo "🔄 Running database migrations..."
-railway run pnpm db:migrate
 
-echo ""
-echo "🌱 Seeding database..."
-railway run pnpm db:seed
-
-echo ""
-echo "🤖 Deploying Bot..."
-railway up --service bot
+# Try to deploy using Railway CLI
+# Note: This may fail with monorepo setup - GitHub integration is more reliable
+if railway status &> /dev/null; then
+    echo "Triggering Railway deployment..."
+    railway up || {
+        echo ""
+        echo "❌ Railway CLI deployment failed."
+        echo ""
+        echo "This is common with monorepo setups."
+        echo ""
+        echo "✅ RECOMMENDED SOLUTION:"
+        echo "1. Push code to GitHub: git push origin main"
+        echo "2. Railway will auto-deploy via GitHub integration"
+        echo ""
+        echo "See RAILWAY_DOCKER_SETUP.md for setup instructions."
+        exit 1
+    }
+else
+    echo "❌ Not linked to Railway project."
+    echo ""
+    echo "To link to Railway project:"
+    echo "1. Run: railway link"
+    echo "2. Select your project from the list"
+    echo ""
+    echo "OR (recommended):"
+    echo "1. Use GitHub integration (automatic deployments)"
+    echo "2. See RAILWAY_DOCKER_SETUP.md"
+    exit 1
+fi
 
 echo ""
 echo "✅ Deployment complete!"
