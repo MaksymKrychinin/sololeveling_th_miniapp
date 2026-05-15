@@ -1,8 +1,8 @@
-import { questRepository } from '@/repositories/QuestRepository';
-import { userRepository } from '@/repositories/UserRepository';
+import { questRepository } from '../repositories/QuestRepository';
+import { userRepository } from '../repositories/UserRepository';
 import { userService } from './UserService';
 import { achievementService } from './achievementService';
-import { AppError } from '@/middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler';
 import { isToday, isYesterday, isWithinStreakGracePeriod } from '@solo-leveling/shared';
 import type { Prisma } from '@solo-leveling/database';
 

@@ -1,6 +1,6 @@
 import { prisma } from '@solo-leveling/database';
 import type { Achievement, UserAchievement, User } from '@solo-leveling/database';
-import { achievementRepository } from '@/repositories/AchievementRepository';
+import { achievementRepository } from '../repositories/AchievementRepository';
 
 type AchievementRequirement = {
   type: 'streak' | 'total_quests' | 'level' | 'stat' | 'specific_quest' | 'category_quests';

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from 'express';
-import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
-import { userService } from '@/services/UserService';
+import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
+import { userService } from '../services/UserService';
 
 const router: IRouter = Router();
 

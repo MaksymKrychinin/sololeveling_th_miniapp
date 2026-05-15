@@ -1,8 +1,8 @@
-import { userRepository } from '@/repositories/UserRepository';
-import { questRepository } from '@/repositories/QuestRepository';
-import { achievementRepository } from '@/repositories/AchievementRepository';
+import { userRepository } from '../repositories/UserRepository';
+import { questRepository } from '../repositories/QuestRepository';
+import { achievementRepository } from '../repositories/AchievementRepository';
 import { calculateXPForLevel, getRankTitle } from '@solo-leveling/shared';
-import { AppError } from '@/middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler';
 
 // Define explicit return types
 type UserProfileResponse = {

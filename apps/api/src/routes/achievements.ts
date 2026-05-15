@@ -1,7 +1,7 @@
 import { Router, type IRouter } from 'express';
-import { authMiddleware, AuthRequest } from '@/middleware/authMiddleware';
-import { achievementRepository } from '@/repositories/AchievementRepository';
-import { achievementService } from '@/services/achievementService';
+import { authMiddleware, AuthRequest } from '../middleware/authMiddleware';
+import { achievementRepository } from '../repositories/AchievementRepository';
+import { achievementService } from '../services/achievementService';
 
 const router: IRouter = Router();
 
