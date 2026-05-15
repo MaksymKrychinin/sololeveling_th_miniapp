@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": null,
+  "buildCommand": "echo 'Using pre-built files from GitHub Actions'",
   "outputDirectory": "dist",
-  "installCommand": "echo 'Using pre-built files'",
-  "framework": null
+  "installCommand": "echo 'Skipping install - files already built'",
+  "framework": null,
+  "ignoreCommand": "echo 'Skipping build check'"
 }
